@@ -34,7 +34,7 @@ tagRouter.post('/createtag', (req, res) => __awaiter(void 0, void 0, void 0, fun
         });
     }
 }));
-tagRouter.get("alltags", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+tagRouter.get("/alltags", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const tags = yield db_1.TagsModel.find({}, "_id title");
         res.status(200).json({

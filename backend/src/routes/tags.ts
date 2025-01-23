@@ -31,7 +31,7 @@ try {
 })
 
 
-tagRouter.get("alltags", async(req:Request, res:Response)=>{
+tagRouter.get("/alltags", async(req:Request, res:Response)=>{
     try {
         const tags= await TagsModel.find({},"_id title")
         res.status(200).json({

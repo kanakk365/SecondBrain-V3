@@ -14,7 +14,7 @@ declare global {
   }
 }
 
-export function TwitterEmbed({ tweetUrl }: TwitterEmbedProps) {
+export function TwitterComp({ tweetUrl }: TwitterEmbedProps) {
   useEffect(() => {
     const loadTwitterScript = () => {
       // Check if the script already exists

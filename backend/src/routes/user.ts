@@ -99,8 +99,10 @@ interface customRequest extends Request {
 
 userRouter.get('/contents', userMiddleware, async (req: customRequest, res: Response) => {
     try {
-        const userId = req.user?._id
-
+        // const userId = req.user?._id
+        const userId= req.query.userID
+        console.log("content")
+        console.log(userId)
         const content = await ContentModel.find({ userId: userId }).populate({
             path: "tags",
             select: "title"

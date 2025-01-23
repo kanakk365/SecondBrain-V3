@@ -90,9 +90,11 @@ userRouter.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 }));
 userRouter.get('/contents', middleware_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     try {
-        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
+        // const userId = req.user?._id
+        const userId = req.query.userID;
+        console.log("content");
+        console.log(userId);
         const content = yield db_1.ContentModel.find({ userId: userId }).populate({
             path: "tags",
             select: "title"

@@ -1,4 +1,4 @@
-export type ThoughtProp = {
+export type CreateCardProp = {
     _id: string,
     link: string,
     title: string,
@@ -15,4 +15,4 @@ type Type = {
 
 
 
-export type ThoughtCardType = 'video' | 'image' | 'article' | 'tweet' | 'link' | null ;
+export type CreateCardType = 'video' | 'image' | 'article' | 'tweet' | 'link' | null ;

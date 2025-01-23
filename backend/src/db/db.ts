@@ -11,14 +11,14 @@ const TagsSchema= new mongoose.Schema({
     title : {type : String , require : true  , unique : true}
 })
 
-const contentType= [ "image" , 'video' , " article " , "tweet" , "link"]
+const contentType= [ "image" , 'video' , "article " , "tweet" , "link"]
 
 const ContentSchema = new mongoose.Schema({
     link : {type : String, require: true},
     title: {type : String, require: true},
     type:{type : String , enum: contentType, require : true},
     description:{type : String  , require : true},
-    tags : {type : mongoose.Types.ObjectId , ref: 'tags'},
+    tags : [{type : mongoose.Types.ObjectId , ref: 'tags'}],
     date: Date,
     userId : {type : mongoose.Types.ObjectId , ref: 'users' , require:true} 
 

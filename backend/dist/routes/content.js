@@ -22,8 +22,17 @@ contentRouter.get("./test", (req, res) => {
     });
 });
 contentRouter.post("/create", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("hit");
     try {
         const { link, type, title, description, tags, userId } = req.body;
+        console.log(link, type, title, description, tags, userId);
+        if (!link || !type || !title || !description || !tags || !userId) {
+            console.log("no data");
+            res.status(500).json({
+                message: "Please enter all details"
+            });
+            return;
+        }
         yield db_1.ContentModel.create({
             link,
             type,
@@ -33,6 +42,7 @@ contentRouter.post("/create", (req, res) => __awaiter(void 0, void 0, void 0, fu
             tags,
             userId
         });
+        console.log("here");
         res.status(201).json({
             message: "Content created"
         });

@@ -10,8 +10,19 @@ contentRouter.get("./test", (req: Request, res: Response) => {
 })
 
 contentRouter.post("/create", async (req: Request, res: Response) => {
+    console.log("hit")
     try {
         const { link, type, title, description, tags, userId } = req.body
+       
+        console.log(link, type, title, description, tags, userId )
+        
+        if( !link || !type || !title || !description || !tags || !userId){
+            console.log("no data")
+            res.status(500).json({
+                message: "Please enter all details"
+            })
+            return
+        }
 
         await ContentModel.create({
             link,
@@ -22,10 +33,13 @@ contentRouter.post("/create", async (req: Request, res: Response) => {
             tags,
             userId
         })
+
+        console.log("here")
         res.status(201).json({
             message: "Content created"
         })
     } catch (error) {
+        console.log(error)
         res.status(500).json({
             message: "Error something went wrong",
             error: error
