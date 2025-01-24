@@ -10,11 +10,11 @@ import { ApiRoutes } from "@/utils/routeApi";
 import { useDispatch } from "react-redux";
 import { setAuth } from "@/store/slice/userSlice";
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+// interface User {
+//   id: string;
+//   name: string;
+//   email: string;
+// }
 
 // interface SignInProps {
 //   setUser: React.Dispatch<React.SetStateAction<User | null>>;
