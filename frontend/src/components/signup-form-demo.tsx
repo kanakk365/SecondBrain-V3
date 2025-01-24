@@ -3,11 +3,6 @@ import React, { useState } from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
-import {
-  IconBrandGithub,
-  IconBrandGoogle,
-  IconBrandOnlyfans,
-} from "@tabler/icons-react";
 import { Button } from "./ui/button";
 import { Link, useNavigate } from "react-router";
 import axios from "axios"
@@ -22,6 +17,7 @@ export default function SignupForm() {
   const [password, setPassword] = useState("");
   const [loding, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  console.log(loding, errors)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

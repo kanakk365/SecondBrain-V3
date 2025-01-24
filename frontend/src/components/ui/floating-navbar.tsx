@@ -7,12 +7,6 @@ import {
 } from "framer-motion";
 import { Link } from "react-router-dom";
 import ShinyButton from "./shiny-button";
-import {
-  Gamepad,
-  SeparatorHorizontal,
-  SeparatorVertical,
-  Sword,
-} from "lucide-react";
 
 interface NavItem {
   name: string;

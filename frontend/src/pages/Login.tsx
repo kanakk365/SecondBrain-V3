@@ -16,9 +16,9 @@ interface User {
   email: string;
 }
 
-interface SignInProps {
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
-}
+// interface SignInProps {
+//   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+// }
 
 
 

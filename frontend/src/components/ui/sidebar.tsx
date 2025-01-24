@@ -1,10 +1,9 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { Link } from "react-router-dom";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconMenu2, IconX } from "@tabler/icons-react";
-import { ThoughtCardType } from "../type/Types";
+import { CreateCardType } from "../type/Types";
 
 interface Links {
   label: string;
@@ -159,8 +158,8 @@ export const SidebarLink = ({
   ...props
 }: {
   link: Links;
-  selectedType: ThoughtCardType;
-  onSelectType: React.Dispatch<React.SetStateAction<ThoughtCardType>>;
+  selectedType: CreateCardType;
+  onSelectType: React.Dispatch<React.SetStateAction<CreateCardType>>;
   className?: string;
   props?: string;
 }) => {
@@ -173,7 +172,7 @@ export const SidebarLink = ({
         className
       )}
       {...props}
-      onClick={()=> onSelectType(selectedType=== link.label.toLowerCase() ? "" as ThoughtCardType : link.label.toLowerCase() as ThoughtCardType)}
+      onClick={()=> onSelectType(selectedType=== link.label.toLowerCase() ? "" as CreateCardType : link.label.toLowerCase() as CreateCardType)}
     >
       {link.icon}
 

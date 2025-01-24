@@ -1,5 +1,5 @@
 // import React from "react";
-import { EvervaultCard, Icon } from "../ui/card-binary";
+import { EvervaultCard } from "../ui/card-binary";
 // import { Separator } from "./separator";
 // import Link from "next/link";
 // import ButtonStd from "./button-std";

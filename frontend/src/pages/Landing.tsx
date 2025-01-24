@@ -4,7 +4,6 @@ import { FloatingNav } from "@/components/ui/floating-navbar";
 import { MacbookScroll } from "@/components/ui/macbook-scroll";
 import Cards from "@/components/Cards";
 import { Button } from "@/components/ui/button";
-import CardComponent from "@/components/CardComponent";
 
 function Landing() {
   return (
