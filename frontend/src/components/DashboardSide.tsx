@@ -746,7 +746,7 @@ const Dashboard = ({
             </div>
           )}
           {isCreateNewOpen && (
-            <div className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
+            <div onClick={onClose} className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
               <div className="border border-black/[0.2] dark:border-white/[0.2]   bg-slate-950 p-6 rounded-lg shadow-lg w-full max-w-md transform transition-transform duration-300 scale-100">
                 <Tabs defaultValue="automatic" className="w-full ">
                   <TabsList className=" w-full">
