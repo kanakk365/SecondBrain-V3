@@ -43,7 +43,7 @@ const UserSchema = new mongoose_1.default.Schema({
 const TagsSchema = new mongoose_1.default.Schema({
     title: { type: String, require: true, unique: true }
 });
-const contentType = ["image", 'video', " article ", "tweet", "link"];
+const contentType = ["image", 'video', "article ", "tweet", "link"];
 const ContentSchema = new mongoose_1.default.Schema({
     link: { type: String, require: true },
     title: { type: String, require: true },

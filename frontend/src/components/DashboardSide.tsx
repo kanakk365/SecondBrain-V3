@@ -9,10 +9,13 @@ import {
 import { Link, useNavigate } from "react-router-dom"; // React Router for navigation
 import { motion } from "framer-motion";
 import {
+  BrainCircuit,
+  Copy,
   FileImage,
   FileText,
   Filter,
   Link2,
+  Loader2,
   LogOut,
   Plus,
   Share,
@@ -33,6 +36,7 @@ import { useDispatch } from "react-redux";
 import { clearAuth } from "@/store/slice/userSlice";
 import { useSelector } from "react-redux";
 import store, { RootState } from "@/store/store";
+import { Switch } from "./ui/switch";
 
 export function DashboardSide() {
   const dispatch = useDispatch();
@@ -94,7 +98,7 @@ export function DashboardSide() {
 
   return (
     <div
-      className={` rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-transparent w-[100vw] flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden h-[100vh]`}
+      className={` rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-transparent flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden w-full h-[100vh]`}
     >
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
@@ -127,7 +131,10 @@ export function DashboardSide() {
           </div>
         </SidebarBody>
       </Sidebar>
-      <Dashboard selectedType={selectedType} setSelectedType={setSelectedType}/>
+      <Dashboard
+        selectedType={selectedType}
+        setSelectedType={setSelectedType}
+      />
     </div>
   );
 }
@@ -163,10 +170,10 @@ export const LogoIcon = () => {
 
 const Dashboard = ({
   selectedType,
-  setSelectedType
-}:{
-  selectedType:CreateCardType
-  setSelectedType: React.Dispatch<React.SetStateAction<CreateCardType>>
+  setSelectedType,
+}: {
+  selectedType: CreateCardType;
+  setSelectedType: React.Dispatch<React.SetStateAction<CreateCardType>>;
 }) => {
   const [isCreateNewOpen, setIsCreateNewOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -188,7 +195,6 @@ const Dashboard = ({
   const [createCardData, setCreateCardData] = useState<CreateCardProp[]>([]);
   const [dataUpdatedCount, setDataUpdatedCount] = useState(0);
   const [cardLoading, setCardLoading] = useState(false);
-  
 
   const [importLink, setImportLink] = useState("");
   const [title, setTitle] = useState("");
@@ -264,11 +270,12 @@ const Dashboard = ({
     return match ? match[1] : null;
   }
 
- function getTweetId(tweetUrl: string): string | null {
-  const regex = /(?:https?:\/\/)?(?:www\.)?(?:twitter\.com|x\.com)\/(?:[^/]+)\/status\/(\d+)/;
-  const match = tweetUrl.match(regex);
-  return match ? match[1] : null;
-}
+  function getTweetId(tweetUrl: string): string | null {
+    const regex =
+      /(?:https?:\/\/)?(?:www\.)?(?:twitter\.com|x\.com)\/(?:[^/]+)\/status\/(\d+)/;
+    const match = tweetUrl.match(regex);
+    return match ? match[1] : null;
+  }
 
   const isValidURL = (url: string) => {
     const urlRegex = /^(https?:\/\/)?[\w.-]+\.[a-z]{2,}(\/\S*)?$/i;
@@ -314,7 +321,7 @@ const Dashboard = ({
     const youtubeVidId = getVideoId(importLink);
     const tweetId = getTweetId(importLink);
     console.log(youtubeVidId);
-    console.log(tweetId)
+    console.log(tweetId);
 
     const importErrors: { [key: string]: string } = {};
 
@@ -408,7 +415,7 @@ const Dashboard = ({
       }
 
       const userdata = JSON.parse(localStorage.getItem("user") || "{}");
-      console.log(userdata)
+      console.log(userdata);
       const userId = userdata?.id;
       const tagId = addingFixedTags("tweet");
       const alltagId: string[] = [];
@@ -502,7 +509,7 @@ const Dashboard = ({
     }
     const userData = JSON.parse(localStorage.getItem("user") || "{}");
     const userId = userData ? userData.id : null;
-    console.log(type)
+    console.log(type);
     if (type === undefined || type === " " || type === null) {
       setType("article");
     }
@@ -555,6 +562,17 @@ const Dashboard = ({
   };
   const [cardData, setCardData] = useState<CreateCardProp[]>([]);
   const [serverDown, setServerDown] = useState(false);
+  
+
+  useEffect(()=>{
+    if(typeof window !== "undefined"){
+      setLinkToCopy(`${window.location.origin}`)
+    }
+  },[])
+
+ 
+
+
   useEffect(() => {
     setCardLoading(true);
 
@@ -562,9 +580,9 @@ const Dashboard = ({
       const userData = localStorage.getItem("user")
         ? JSON.parse(localStorage.getItem("user") || "{}")
         : null;
-      const userID = userData? userData.id : null;
-      console.log(userID)
-      console.log(userData)
+      const userID = userData ? userData.id : null;
+      console.log(userID);
+      console.log(userData);
 
       if (userID) {
         try {
@@ -576,8 +594,8 @@ const Dashboard = ({
               userID: userID,
             },
           });
-          console.log("here")
-          console.log(res.data)
+          console.log("here");
+          console.log(res.data);
           setCardData(res.data);
           console.log(cardData);
         } catch (error) {
@@ -588,12 +606,106 @@ const Dashboard = ({
       }
       setCardLoading(false);
     };
-    getUserContents()
-  },[dataUpdatedCount]);
+
+    const getUserShareable = async () => {
+      const userData = localStorage.getItem("user")
+        ? JSON.parse(localStorage.getItem("user") || "{}")
+        : null;
+
+      const userId = userData?.id;
+
+      if (userId) {
+        try {
+          const res = await axios.get(`${ApiRoutes.shareHexVal}/${userId}`);
+          setHash(res.data.link.hash);
+          setOpenAccess(true);
+        } catch (error) {
+          console.log(error);
+          setOpenAccess(false);
+        }
+      } else {
+        alert("Error: User is not defined");
+      }
+    };
+    getUserShareable();
+    getUserContents();
+  }, [dataUpdatedCount]);
+
+  //  share stuff
+
+  const [openAccess, setOpenAccess] = useState(false);
+  const [hash, setHash] = useState<string>("");
+  const [conformationOpen, setConformationOpen] = useState(false);
+  const [showCopiedMsg, setShowCopiedMsg] = useState(false);
+  const [linkToCopy, setLinkToCopy] = useState("");
+  const [shareBtnLoading, setShareBtnLoading] = useState(false);
+  const [src, setSrc] = useState<string>("");
+
+  const shareBrain = async () => {
+    const sharelink = `${linkToCopy}/share/brain/${hash}`
+
+    try {
+      await navigator.clipboard.writeText(sharelink)
+    } catch (error) {
+      alert("failed to copy link")
+    }
+    setTimeout(()=>{
+      setShowCopiedMsg(false)
+    },2000)
+    setShowCopiedMsg(true)
+  };
+
+  const handlePublicAccessToggle = () => {
+    if (!openAccess) {
+      setOpenAccess(true);
+      shareRequest(true);
+    } else {
+      setIsShareOpen(false);
+      setOpenAccess(false);
+      shareRequest(false)
+    }
+  };
+
+  const shareRequest = async (share: boolean) => {
+    const shareReq = {
+      share: share,
+    };
+    setShareBtnLoading(true);
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      };
+
+      const res = await axios.post(ApiRoutes.share, shareReq, config);
+      const data = await res.data;
+      console.log(res);
+
+      if (
+        res.status === 201 ||
+        res.status === 200 ||
+        res.statusText === "OK" ||
+        res.statusText.toLowerCase() === "created"
+      ) {
+        setHash(data.hashVal);
+        console.log(data.hashVal);
+        setShareBtnLoading(false);
+      } else {
+        // Handle server errors
+        const errorData = await res.data;
+        alert(`Error: ${errorData.message || "Submission failed"}`);
+        setShareBtnLoading(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="flex flex-1 h-full">
-      <div className="border border-neutral-700 p-10 md:p-10 rounded-tl-2xl bg-transparent flex flex-col gap-2 flex-1 w-full h-full">
+      <div className="border border-neutral-700 p-10 md:p-10 rounded-tl-2xl bg-transparent flex flex-col gap-2 flex-1 w-full  h-full">
         <div className="flex flex-col gap-2 h-full">
           {/* Header Section */}
           <div className="h-20 w-full rounded-lg flex justify-between items-center">
@@ -608,18 +720,18 @@ const Dashboard = ({
               >
                 <Plus /> <span className="sm:inline hidden">Create New</span>
               </Button>
-              <Button>
+              <Button onClick={openShare}>
                 <Share2 /> <span className="sm:inline hidden">Share</span>
               </Button>
             </div>
           </div>
           {selectedType && (
-            <div className='flex items-center gap-2 text-md'>
-              <div className='bg-purple-200/10 rounded-full px-3 flex justify-center items-center gap-1'>
-                <Filter className='w-4 h-4' />
+            <div className="flex items-center gap-2 text-md">
+              <div className="bg-purple-200/10 rounded-full px-3 flex justify-center items-center gap-1">
+                <Filter className="w-4 h-4" />
                 {selectedType}
                 <X
-                  className='h-4 w-4 text-red-700 hover:text-red-300 cursor-pointer'
+                  className="h-4 w-4 text-red-700 hover:text-red-300 cursor-pointer"
                   onClick={() => setSelectedType(null)}
                 />
               </div>
@@ -911,10 +1023,99 @@ const Dashboard = ({
               </div>
             </div>
           )}
+          {isShareOpen && (
+            <div
+              className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300"
+              onClick={onClose} // Close modal when clicking background
+            >
+              <div
+                onClick={(e) => e.stopPropagation()} // Prevents modal click from closing it
+                className="border border-black/[0.2] dark:border-white/[0.2]   bg-slate-950 p-6 rounded-lg shadow-lg w-full max-w-md transform transition-transform duration-300 scale-100"
+              >
+                <h2 className="text-white text-xl mb-4 text-center">
+                  Share Your Second Brain
+                </h2>
+                <button
+                  className="absolute top-4 right-6  rounded-full text-xs"
+                  onClick={onClose}
+                >
+                  <X className="h-5 w-5" />
+                </button>
+                <div className="mt-4 flex items-center justify-between  py-2">
+                  <span className="text-sm text-gray-400">
+                    Allow public access
+                  </span>
+                  <Switch
+                    checked={openAccess}
+                    onCheckedChange={handlePublicAccessToggle}
+                  />
+                </div>
+                {openAccess && (
+                  <div className="font-mono text-sm text-wrap">
+                    hash: {hash}
+                  </div>
+                )}
+                <Separator />
+                <div className="flex flex-col md:flex-row gap-7 mt-2">
+                  <div className="flex flex-col gap-5">
+                    <span className="text-sm text-gray-300">
+                      Share your entire collection of notes, documents, tweets,
+                      and videos with others. They&apos;ll be able to import
+                      your content into their own second brain.{" "}
+                    </span>
+                    <div>
+                      <Button
+                        className="w-full bg-purple-200"
+                        onClick={shareBrain}
+                        disabled={!openAccess}
+                      >
+                        {shareBtnLoading ? (
+                          <Loader2 className="animate-spin" />
+                        ) : (
+                          <>
+                            <Copy />
+                            Share brain
+                          </>
+                        )}
+                      </Button>
+                      <p
+                        className={`text-sm text-purple-200 transition-opacity duration-300 ease-out ${
+                          showCopiedMsg ? "opacity-100" : "opacity-0"
+                        }`}
+                      >
+                        Copied!
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex justify-center items-center">
+                    <div className="w-64 h-64 md:w-32 md:h-32  text-center">
+                      {openAccess ? (
+                        <div className=" w-full h-full">
+                          {shareBtnLoading ? (
+                            <div className="w-full h-full bg-slate-600/20 animate-pulse"></div>
+                          ) : (
+                            <img src={src} className="w-full" />
+                          )}
+                        </div>
+                      ) : (
+                        <div className="w-full h-full ">
+                          <BrainCircuit className="w-full h-full text-purple-100" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           <Separator />
           {/* Scrollable Div */}
           <div className=" scroll  overflow-y-auto border border-neutral-700 rounded-lg p-8 max-h-full  bg-gray-300 bg-opacity-5 ">
-            <UserContent cardData={cardData} setCardData={setCardData} selectedType={selectedType}/>
+            <UserContent
+              cardData={cardData}
+              setCardData={setCardData}
+              selectedType={selectedType}
+            />
           </div>
         </div>
       </div>
@@ -922,23 +1123,22 @@ const Dashboard = ({
   );
 };
 
-
 const UserContent = ({
   cardData,
   setCardData,
-  selectedType
-}:{
-  cardData:CreateCardProp[]
-  setCardData: React.Dispatch<React.SetStateAction<CreateCardProp[]>>
-  selectedType: CreateCardType
-})=>{
-return(
-  <div>
-    <CardComponent
-    cardData={cardData}
-    setCardData={setCardData}
-    selectedType={selectedType}
-    />
-  </div>
-)
-}
+  selectedType,
+}: {
+  cardData: CreateCardProp[];
+  setCardData: React.Dispatch<React.SetStateAction<CreateCardProp[]>>;
+  selectedType: CreateCardType;
+}) => {
+  return (
+    <div>
+      <CardComponent
+        cardData={cardData}
+        setCardData={setCardData}
+        selectedType={selectedType}
+      />
+    </div>
+  );
+};

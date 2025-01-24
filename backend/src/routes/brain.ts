@@ -12,7 +12,8 @@ const SHAREABLE_LINK_HOST = process.env.SHARABLE_LINK_HOST || "http://localhost:
 interface User {
     _id: string,
     username: string,
-    email: string
+    email: string,
+    userId?:string
 }
 
 interface customRequest extends Request {
@@ -20,9 +21,13 @@ interface customRequest extends Request {
 }
 
 brainRouter.post("/share", userMiddleware , async (req: customRequest, res: Response) => {
+    console.log("here")
+    console.log(req.user)
     try {
         const { share } = req.body
-        const userId = req.user?._id
+        console.log(share , req.user?.userId)
+        
+        const userId = req.user?.userId
 
         if (!userId) {
             res.status(400).json({

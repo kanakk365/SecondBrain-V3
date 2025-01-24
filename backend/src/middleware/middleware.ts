@@ -52,6 +52,7 @@ async function userMiddleware(req: customRequest, res: Response, next: NextFunct
         };
 
         req.user = user 
+        
         next()
 
     } catch (error) {

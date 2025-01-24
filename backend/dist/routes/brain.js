@@ -21,10 +21,13 @@ dotenv_1.default.config();
 const brainRouter = (0, express_1.Router)();
 const SHAREABLE_LINK_HOST = process.env.SHARABLE_LINK_HOST || "http://localhost:3000";
 brainRouter.post("/share", middleware_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
+    console.log("here");
+    console.log(req.user);
     try {
         const { share } = req.body;
-        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
+        console.log(share, (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId);
+        const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.userId;
         if (!userId) {
             res.status(400).json({
                 message: "User ID is needed"

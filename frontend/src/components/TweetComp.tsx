@@ -38,7 +38,7 @@ export function TwitterComp({ tweetUrl }: TwitterEmbedProps) {
   }, [tweetUrl]);
 
   return (
-    <div className="twitter-embed  w-full">
+    <div className="twitter-embed w-12 flex justify-center items-center  ">
       <blockquote className="twitter-tweet " data-dnt="true">
         <a href={tweetUrl}></a>
       </blockquote>

@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/store";
+import SharePage from "./pages/SharePage";
 
 function App() {
   
@@ -23,6 +24,7 @@ function App() {
             <Route path="/login" element={<Login  />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/home" element={<Home/>} />
+            <Route path="/share/brain/:hash" element={<SharePage/>} />
           </Routes>
         </div>
       </Router>
