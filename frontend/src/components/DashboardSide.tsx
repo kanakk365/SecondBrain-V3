@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "./ui/sidebar"; // Adjust the path as necessary
-import {
-  IconArrowLeft,
-  IconBrandTabler,
-  IconSettings,
-  IconUserBolt,
-} from "@tabler/icons-react";
 import { Link, useNavigate } from "react-router-dom"; // React Router for navigation
 import { motion } from "framer-motion";
 import {
@@ -18,7 +12,6 @@ import {
   Loader2,
   LogOut,
   Plus,
-  Share,
   Share2,
   Twitter,
   User,
@@ -35,7 +28,7 @@ import { Separator } from "./ui/separator";
 import { useDispatch } from "react-redux";
 import { clearAuth } from "@/store/slice/userSlice";
 import { useSelector } from "react-redux";
-import store, { RootState } from "@/store/store";
+import { RootState } from "@/store/store";
 import { Switch } from "./ui/switch";
 
 export function DashboardSide() {
