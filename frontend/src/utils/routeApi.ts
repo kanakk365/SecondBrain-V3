@@ -1,7 +1,7 @@
 // require('dotenv').config;
 
-const host = "http://localhost:3000";
-// const host = "https://secondbrain-server.vercel.app";
+// const host = "http://localhost:3000";
+const host = "https://secondbrain-v3.onrender.com";
 
 
 export const ApiRoutes = {
