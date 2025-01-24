@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { z } from "zod";
-import bcrypt from "bcrypt"
+import bcryptjs from "bcryptjs" 
 import jwt from "jsonwebtoken"
 import { ContentModel, UserModel } from "../db/db";
 import userMiddleware from "../middleware/middleware";
@@ -34,7 +34,7 @@ userRouter.post("/signup", async (req: Request, res: Response) => {
     const { username, email, password } = req.body
 
     try {
-        const hashedPassword = await bcrypt.hash(password, 5);
+        const hashedPassword = await bcryptjs.hash(password, 5);
         console.log(hashedPassword);
         await UserModel.create({
             email,
@@ -66,7 +66,7 @@ userRouter.post("/signin", async (req: Request, res: Response) => {
         })
         return
     }
-    const passCheck = user.password ? bcrypt.compare(password, user.password) : false
+    const passCheck = user.password ? bcryptjs.compare(password, user.password) : false
     if (passCheck) {
         const token = jwt.sign({
             id: user._id.toString()
