@@ -1,4 +1,3 @@
-import React from 'react';
 
 export function YouTubeComp({ url }: { url: string }) {
   const getYouTubeVideoId = (url: string): string | null => {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "./ui/sidebar"; // Adjust the path as necessary
 import { Link, useNavigate } from "react-router-dom"; // React Router for navigation
 import { motion } from "framer-motion";
+import QRcode  from "qrcode";
 import {
   BrainCircuit,
   Copy,
@@ -73,17 +74,20 @@ export function DashboardSide() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user);
+  console.log(user)
   const userData = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [selectedType, setSelectedType] = useState<CreateCardType>(null);
 
   const [signOut, setSignout] = useState(false);
+  console.log(signOut)
 
   const signout = () => {
     setSignout(true);
   };
 
   const signOutHandler = () => {
+    signout()
     dispatch(clearAuth());
     localStorage.removeItem("token");
     navigate("/");
@@ -188,7 +192,7 @@ const Dashboard = ({
   const [createCardData, setCreateCardData] = useState<CreateCardProp[]>([]);
   const [dataUpdatedCount, setDataUpdatedCount] = useState(0);
   const [cardLoading, setCardLoading] = useState(false);
-
+  console.log(createCardData, cardLoading)
   const [importLink, setImportLink] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -221,6 +225,7 @@ const Dashboard = ({
       const res = await axios.post(ApiRoutes.createtag, {
         title: tagTitle.toLowerCase(),
       });
+      console.log(res.data)
       const newAllTags = await axios.get(ApiRoutes.alltags);
       setAllTags(newAllTags.data.tags);
 
@@ -555,6 +560,7 @@ const Dashboard = ({
   };
   const [cardData, setCardData] = useState<CreateCardProp[]>([]);
   const [serverDown, setServerDown] = useState(false);
+  console.log(serverDown)
   
 
   useEffect(()=>{
@@ -628,11 +634,20 @@ const Dashboard = ({
 
   const [openAccess, setOpenAccess] = useState(false);
   const [hash, setHash] = useState<string>("");
-  const [conformationOpen, setConformationOpen] = useState(false);
+
   const [showCopiedMsg, setShowCopiedMsg] = useState(false);
   const [linkToCopy, setLinkToCopy] = useState("");
   const [shareBtnLoading, setShareBtnLoading] = useState(false);
   const [src, setSrc] = useState<string>("");
+
+  useEffect(()=>{
+   const generateQr = ()=>{
+    const sharelink = `${linkToCopy}/share/brain/${hash}`
+    QRcode.toDataURL(sharelink).then(setSrc)
+    
+   }
+   generateQr()
+  },[hash])
 
   const shareBrain = async () => {
     const sharelink = `${linkToCopy}/share/brain/${hash}`
