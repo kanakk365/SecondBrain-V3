@@ -90,7 +90,7 @@ export default function SharePage () {
     )
 
   return (
-    <div className='min-h-screen flex flex-col items-center mx-auto bg-transparent max-w-6xl rounded-md w-screen'>
+    <div className='min-h-screen flex flex-col items-center mx-auto bg-transparent max-w-full px-28 rounded-md w-screen bg-[#0e1012]'>
       {/* Header Section */}
       <div className='p-10 md:p-10 bg-transparent flex flex-col items-center gap-2'>
         <h1 className='text-xl md:text-3xl bg-gradient-to-tr from-purple-300/80 to-white/90 bg-clip-text text-transparent'>
@@ -100,7 +100,7 @@ export default function SharePage () {
       </div>
 
       {/* Main Content Section */}
-      <div className='w-full flex-grow  flex justify-center'>
+      <div className='w-full flex-grow  flex justify-center bg-[#0e1012]'>
         <SharedCard contents={content.sharedContents} alltags={alltags} />
       </div>
 
@@ -186,9 +186,9 @@ const SharedCard = ({
   }
 
   return (
-    <div className=''>
+    <div className='bg-[#0e1012]'>
       {/* <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 bg-slate-700/10 p-5 rounded-lg min-h-96'> */}
-      <div className='columns-1 md:columns-2 lg:columns-3 gap-1 bg-slate-700/10 w-full rounded-lg '>
+      <div className='columns-1 md:columns-2 lg:columns-3 gap-1 bg-[#0e1012] w-full rounded-lg '>
         {contents.map((content: any, index: number) => {
           const IconComponent = iconMap[content.type] || FileText // Fallback to a default icon if not found
 
@@ -197,12 +197,9 @@ const SharedCard = ({
 
               <div
                 key={index}
-                className='border border-black/[0.2] bg-gradient-to-tr from-purple-400/10 to-transparent/5 dark:border-white/[0.2] flex flex-col items-start  relative  w-full px-5 '
+                className='border border-black/[0.2] bg-gradient-to-tr bg-[#343434] flex flex-col items-start  relative  w-full px-5 rounded-md '
               >
-                <Icon className='absolute h-6 w-6 -top-3 -left-3 dark:text-white text-black' />
-                <Icon className='absolute h-6 w-6 -bottom-3 -left-3 dark:text-white text-black' />
-                <Icon className='absolute h-6 w-6 -top-3 -right-3 dark:text-white text-black' />
-                <Icon className='absolute h-6 w-6 -bottom-3 -right-3 dark:text-white text-black' />
+                
 
                 <div className='p-2  w-full'>
                   <div className='flex flex-row items-center justify-between space-y-0 pb-2 '>
@@ -242,10 +239,10 @@ const SharedCard = ({
                   {/* <div className='text-gray-400'>{content.tags.map((tagId:string, index:number) => <div key={index}>{tagId}</div>)}</div> */}
                   {/* <div className='text-gray-400'>{content.tags.map((tagId:string, index:number) => <div key={index}>{tagId}</div>)}</div> */}
                   <div className=' py-2  bottom-0'>
-                    <div className='text-purple-200 flex gap-1 flex-wrap'>
+                    <div className='text-[#5E43EC] flex gap-1 flex-wrap'>
                       {getTagTitles(content.tags).map(tag => (
-                        <div className=' bg-purple-700/40 px-1 text-sm rounded-lg'>
-                          {tag}
+                        <div className=' bg-[#5E43EC]/10   p-1 text-sm rounded-lg'>
+                          #{tag}
                         </div>
                       ))}
                     </div>

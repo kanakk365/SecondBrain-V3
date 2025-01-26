@@ -8,6 +8,9 @@ import Home from "./pages/Home";
 // import { useSelector } from "react-redux";
 // import { RootState } from "./store/store";
 import SharePage from "./pages/SharePage";
+import LandingV2 from "./pages/LandingV2";
+import MainLayout from "./MainLayout";
+import { BackgroundLines } from "./components/ui/background-lines";
 
 function App() {
   
@@ -18,10 +21,10 @@ function App() {
       <Router>
         <div className="App">
           <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login  />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/home" element={<Home/>} />
+            <Route path="/" element={<LandingV2 />} />
+            <Route path="/login" element={<BackgroundLines><Login/></BackgroundLines>  } />
+            <Route path="/signup" element={<BackgroundLines><Signup/></BackgroundLines>} />
+            <Route path="/home" element={<MainLayout> <Home/></MainLayout>} />
             <Route path="/share/brain/:hash" element={<SharePage/>} />
           </Routes>
         </div>

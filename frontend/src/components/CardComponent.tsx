@@ -171,9 +171,9 @@ export default function CardComponent ({
             if (!selectedType || data.type === selectedType) {
               // console.log("selectedType is: ", selectedType + thought.type)
               return (
-                <div key={index} className='p-3 break-inside-avoid  w-full'>
+                <div key={index} className='p-3 break-inside-avoid  w-full '>
                 
-                  <Card className='shadow-sm' key={index}>
+                  <Card className='shadow-sm bg-[#262626]' key={index}>
                     <CardHeader className='flex flex-row items-start justify-between space-y-0 pb-2'>
                       <div className='flex flex-shrink-0 items-center text-center gap-2 pt-2 pr-3 pl-0'>
                         {/* <FileText className='h-4 w-4' /> */}

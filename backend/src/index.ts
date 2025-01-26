@@ -14,6 +14,7 @@ const PORT = process.env.PORT || 3000;
 
 // Define the allowed origin
 const allowedOrigin = "https://second-brain-wine-sigma.vercel.app";
+// const allowedOrigin = " http://localhost:5173";
 
 // CORS configuration
 const corsOptions = {

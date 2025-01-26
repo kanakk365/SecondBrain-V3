@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import QRcode  from "qrcode";
 import {
   BrainCircuit,
+  BrainCircuitIcon,
   Copy,
   FileImage,
   FileText,
@@ -95,12 +96,12 @@ export function DashboardSide() {
 
   return (
     <div
-      className={` rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-transparent flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden w-full h-[100vh]`}
+      className={` rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-[#262626] flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden w-full h-[100vh]`}
     >
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-            {open ? <Logo /> : <LogoIcon />}
+            {open ? <Logo /> : <BrainCircuitIcon />}
             <div className="mt-8 flex flex-col gap-2">
               {links.map((link, idx) => (
                 <SidebarLink
@@ -142,13 +143,13 @@ export const Logo = () => {
       to="/"
       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
     >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+      <BrainCircuitIcon color="#ffffff"/>
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="font-medium text-black dark:text-white whitespace-pre"
       >
-        Acet Labs
+        Second Brain
       </motion.span>
     </Link>
   );
@@ -713,7 +714,7 @@ const Dashboard = ({
 
   return (
     <div className="flex flex-1 h-full">
-      <div className="border border-neutral-700 p-10 md:p-10 rounded-tl-2xl bg-transparent flex flex-col gap-2 flex-1 w-full  h-full">
+      <div className="border border-neutral-700 p-10 md:p-10 rounded-tl-2xl  flex flex-col gap-2 flex-1 w-full  h-full">
         <div className="flex flex-col gap-2 h-full">
           {/* Header Section */}
           <div className="h-20 w-full rounded-lg flex justify-between items-center">
@@ -747,7 +748,7 @@ const Dashboard = ({
           )}
           {isCreateNewOpen && (
             <div className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
-              <div className="border border-black/[0.2] dark:border-white/[0.2]   bg-slate-950 p-6 rounded-lg shadow-lg w-full max-w-md transform transition-transform duration-300 scale-100">
+              <div className="border border-black/[0.2] dark:border-white/[0.2]   bg-[#111111] p-6 rounded-lg shadow-lg w-full max-w-md transform transition-transform duration-300 scale-100">
                 <Tabs defaultValue="automatic" className="w-full ">
                   <TabsList className=" w-full">
                     <TabsTrigger value="automatic" className="w-full">
@@ -1038,7 +1039,7 @@ const Dashboard = ({
             >
               <div
                 onClick={(e) => e.stopPropagation()} // Prevents modal click from closing it
-                className="border border-black/[0.2] dark:border-white/[0.2]   bg-slate-950 p-6 rounded-lg shadow-lg w-full max-w-md transform transition-transform duration-300 scale-100"
+                className="border border-black/[0.2] dark:border-white/[0.2]   bg-[#111111] p-6 rounded-lg shadow-lg w-full max-w-md transform transition-transform duration-300 scale-100"
               >
                 <h2 className="text-white text-xl mb-4 text-center">
                   Share Your Second Brain
@@ -1118,7 +1119,7 @@ const Dashboard = ({
           )}
           <Separator />
           {/* Scrollable Div */}
-          <div className=" scroll  overflow-y-auto border border-neutral-700 rounded-lg p-8 max-h-full  bg-gray-300 bg-opacity-5 ">
+          <div id="scrollable" className=" scroll  overflow-y-auto border border-neutral-700 rounded-lg p-8 max-h-full  bg-gray-300 bg-opacity-5 ">
             <UserContent
               cardData={cardData}
               setCardData={setCardData}

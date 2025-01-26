@@ -1,0 +1,23 @@
+/* Targeting the div with the ID 'scrollable' */
+
+  
+  /* Changing the scrollbar track color */
+  #scrollable::-webkit-scrollbar {
+    width: 8px; /* Adjust the width of the scrollbar */
+  }
+  
+  #scrollable::-webkit-scrollbar-track {
+    background: #888; /* Track color */
+  }
+  
+  /* Changing the scrollbar thumb (the draggable part) color */
+  #scrollable::-webkit-scrollbar-thumb {
+    background: #f1f1f1; /* Thumb color */
+    border-radius: 10px; /* Optional: rounded corners */
+  }
+  
+  /* Optional: On hover, change the thumb color */
+  #scrollable::-webkit-scrollbar-thumb:hover {
+    background: #ffffff; /* Hover thumb color */
+  }
+  

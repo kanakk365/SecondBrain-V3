@@ -60,7 +60,7 @@ export default function SignupForm() {
 
 
   return (
-    <div className="max-w-md w-96 mx-auto rounded-none md:rounded-2xl p-4 md:p-8  bg-white dark:bg-transparent h-fit ">
+    <div className="max-w-md w-96 mx-auto rounded-none md:rounded-2xl p-4 md:p-8  bg-black dark:bg-transparent h-fit ">
       <h1 className="text-2xl font-semibold tracking-tight bg-gradient-to-tr  from-purple-300/80 to-white/90 bg-clip-text text-transparent">
         Create an account
       </h1>
@@ -72,7 +72,7 @@ export default function SignupForm() {
             Email Address
           </Label>
           <Input
-            className="dark:bg-[#020617]"
+            className="bg-[#020617]"
             id="email"
             placeholder="projectmayhem@fc.com"
             type="email"
@@ -84,7 +84,7 @@ export default function SignupForm() {
             Username
           </Label>
           <Input
-            className="dark:bg-[#020617]"
+            className="bg-[#020617]"
             id="username"
             placeholder="Project"
             type="text"
@@ -96,7 +96,7 @@ export default function SignupForm() {
            Password
           </Label>
           <Input
-            className="dark:bg-[#020617]"
+            className="bg-[#020617]"
             id="password"
             placeholder="••••••••"
             type="password"
@@ -105,7 +105,7 @@ export default function SignupForm() {
         </LabelInputContainer>
 
         <button
-          className="bg-gradient-to-br relative group/btn block dark:bg-[#4930c9] w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+          className="bg-gradient-to-br relative group/btn block  w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
           type="submit"
         >
           Sign up &rarr;

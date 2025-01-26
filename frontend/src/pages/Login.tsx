@@ -7,8 +7,8 @@ import { Button } from "../components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ApiRoutes } from "@/utils/routeApi";
-import { useDispatch } from "react-redux";
-import { setAuth } from "@/store/slice/userSlice";
+
+
 
 // interface User {
 //   id: string;
@@ -23,7 +23,7 @@ import { setAuth } from "@/store/slice/userSlice";
 
 
 export default function Login() {
-  const dispatch = useDispatch();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -56,7 +56,6 @@ export default function Login() {
       if (res.status === 200) {
         const { token, user } = res.data;
         console.log(user)
-        dispatch(setAuth({user}))
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(user));
         navigate("/home");
@@ -73,8 +72,8 @@ export default function Login() {
   };
 
   return (
-      <div className="h-[100vh] flex justify-center items-center">
-        <div className="max-w-md w-96 mx-auto rounded-none md:rounded-2xl p-4 md:p-8 bg-white dark:bg-transparent h-fit">
+      <div className="h-[100vh] flex justify-center items-center  ">
+        <div className="max-w-md w-96 mx-auto rounded-none md:rounded-2xl p-4 md:p-8 bg-black dark:bg-black h-fit">
           <h1 className="text-2xl font-semibold tracking-tight bg-gradient-to-tr from-purple-300/80 to-white/90 bg-clip-text text-transparent">
             Welcome Back
           </h1>
@@ -84,7 +83,7 @@ export default function Login() {
                 Username
               </Label>
               <Input
-                className="dark:bg-[#020617]"
+                className="bg-[#020617]"
                 id="username"
                 placeholder="projectmayhem@fc.com"
                 type="text"
@@ -100,7 +99,7 @@ export default function Login() {
                 Password
               </Label>
               <Input
-                className="dark:bg-[#020617]"
+                className="bg-[#020617]"
                 id="password"
                 placeholder="••••••••"
                 type="password"
@@ -114,15 +113,16 @@ export default function Login() {
             {errors.form && (
               <p className="text-red-500 text-sm mb-4">{errors.form}</p>
             )}
-            <Button
-              className="bg-gradient-to-br relative group/btn block dark:bg-[#4930c9] w-full text-white rounded-md h-10 font-medium"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? "Signing in..." : "Sign In →"}
-            </Button>
+         <button
+          className=" p-2 bg-gradient-to-br relative group/btn block  w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+          type="submit"
+        >
+          Sign up &rarr;
+          <BottomGradient />
+          <div className="  bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
+        </button>
           </form>
-          <div className="text-center mt-4">
+          <div className="text-center mt-4 ">
             <Link to="/signup">
               <Button className="text-gray-400 hover:text-white" variant={"link"}>
                 Don’t have an account? Sign Up
@@ -132,6 +132,15 @@ export default function Login() {
         </div>
       </div>
     );
+};
+
+const BottomGradient = () => {
+  return (
+    <>
+      <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
+      <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
+    </>
+  );
 };
 
 const LabelInputContainer: React.FC<{
