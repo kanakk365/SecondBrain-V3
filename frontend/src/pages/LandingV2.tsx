@@ -6,7 +6,7 @@ import HowItWorks from '@/components/landingComp/HowItWorks'
 import SeamlessIntegrations from '@/components/landingComp/Integration'
 import { navItems } from '@/components/site/nav'
 import { FloatingNav } from '@/components/ui/floating-navbar'
-import React from 'react'
+
 
 function LandingV2() {
   return (
