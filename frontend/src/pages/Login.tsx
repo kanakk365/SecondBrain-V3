@@ -29,6 +29,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const navigate = useNavigate();
+  console.log(loading)
 
   async function handleSubmit(e:  React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

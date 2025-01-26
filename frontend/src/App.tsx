@@ -1,7 +1,6 @@
 import "./App.css";
 import { ThemeProvider } from "./components/ui/theme-provider";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Landing from "./pages/Landing";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Home from "./pages/Home";

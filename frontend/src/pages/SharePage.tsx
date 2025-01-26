@@ -3,7 +3,7 @@ import { ApiRoutes } from '../utils/routeApi'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Icon } from '../components/ui/card-binary'
+
 import {
   FileText,
   Link,

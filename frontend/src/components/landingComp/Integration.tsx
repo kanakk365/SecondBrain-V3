@@ -1,5 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
-import { Youtube, Twitter, Linkedin, PinIcon as PinterestIcon, Info } from "lucide-react"
+
 
 export default function SeamlessIntegrations() {
   return (
