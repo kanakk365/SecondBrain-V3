@@ -5,58 +5,117 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const extractVideoId = (url: string): string | null => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
-}
+    if (!url) return null;
+    
+    const patterns = [
+        /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i,
+        /^([^"&?\/\s]{11})$/i
+    ];
+
+    for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match && match[1]) return match[1];
+    }
+    
+    return null;
+};
 
 const getTranscript = async (videoId: string): Promise<string> => {
     try {
-        const transcriptItems = await YoutubeTranscript.fetchTranscript(videoId);
+        if (!videoId) return "Invalid video ID provided";
+
+        const transcriptItems = await YoutubeTranscript.fetchTranscript(videoId, {
+            lang: 'en'  // Only using supported configuration options
+        });
+
+        if (!transcriptItems || transcriptItems.length === 0) {
+            return "No transcript available for this video";
+        }
+
         return transcriptItems.map(item => item.text).join(" ");
     } catch (error) {
-        return "No Transcript generated "
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        console.error(`Transcript Error: ${errorMessage}`);
+        
+        if (error instanceof Error && error.message.includes("No captions found")) {
+            return "No captions available for this video. Please check if the video has closed captions enabled.";
+        }
+        
+        return "No transcript generated";
     }
-}
+};
 
-const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-const model = genai.getGenerativeModel({ model: 'gemini-pro' });
+const initializeGemini = () => {
+    if (!process.env.GEMINI_API_KEY) {
+        console.error("GEMINI_API_KEY is missing in environment variables");
+        return null;
+    }
+
+    try {
+        const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        return genai.getGenerativeModel({ model: 'gemini-pro' });
+    } catch (error) {
+        console.error("Failed to initialize Gemini AI:", error);
+        return null;
+    }
+};
 
 const summarizeWithGemini = async (text: string): Promise<string> => {
     try {
-        const prompt = `Summarize the following YouTube video transcript into 10 concise bullet points focusing on key points and main ideas. Use markdown formatting for the bullet points:\n\n${text}`;
+        if (!text || text.length < 10) {
+            return "Insufficient content to summarize";
+        }
+
+        const model = initializeGemini();
+        if (!model) {
+            return "AI model initialization failed";
+        }
+
+        const prompt = `
+Please provide a comprehensive summary of the following YouTube video transcript. 
+Format the output as follows:
+
+1. Main Topic/Theme
+2. Key Points (5-7 bullet points)
+3. Important Details
+4. Conclusion/Takeaways
+
+Transcript:
+${text}
+`;
         
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        return response.text() || "No summary generated";
+        return response.text() || "Summary generation failed";
     } catch (error) {
         console.error("Gemini Error:", error);
-        return "No summary generated"
+        return "No summary generated";
     }
-}
+};
 
-const run = async (url: string) => {
+const run = async (url: string): Promise<string> => {
     try {
+        if (!url) {
+            return "URL is required";
+        }
+
         const videoId = extractVideoId(url);
         if (!videoId) {
-            return "No summary generated"
+            return "Invalid YouTube URL format";
         }
         
         const transcript = await getTranscript(videoId);
-        if (!transcript) {
-            return "No summary generated"
+        if (transcript === "No transcript generated" || 
+            transcript.includes("No captions available")) {
+            return transcript;
         }
         
-        const data = await summarizeWithGemini(transcript);
-        return data;
+        const summary = await summarizeWithGemini(transcript);
+        return summary;
     } catch (error) {
-        if (error instanceof Error) {
-            console.error("Error:", error.message);
-        } else {
-            console.error("Unknown error:", error);
-        }
-        process.exit(1);
+        console.error("Error in run function:", error);
+        return "Failed to process video";
     }
-}
+};
 
 export default run;
