@@ -19,10 +19,12 @@ const extractVideoId = (url: string): string | null => {
     
     return null;
 };
-
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const getTranscript = async (videoId: string): Promise<string> => {
     try {
         if (!videoId) return "Invalid video ID provided";
+
+        await wait(2000);
 
         const transcriptItems = await YoutubeTranscript.fetchTranscript(videoId, {
             lang: 'en'  // Only using supported configuration options
