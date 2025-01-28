@@ -734,7 +734,7 @@ const Dashboard = ({
 
   return (
     <div className="flex flex-1 h-full z-10">
-      <div className="border border-neutral-700 p-10 md:p-10 rounded-tl-2xl  flex flex-col gap-2 flex-1 w-full  h-full">
+      <div className="border border-neutral-700 md:p-10 p-2 rounded-tl-2xl  flex flex-col gap-2 flex-1 w-full  h-full">
         <div className="flex flex-col gap-2 h-full">
           {/* Header Section */}
           <div className="h-20 w-full rounded-lg flex justify-between items-center">
@@ -1161,7 +1161,7 @@ const Dashboard = ({
           )}
           <Separator />
           {/* Scrollable Div */}
-          <div id="scrollable" className=" scroll  overflow-y-auto border border-neutral-700 rounded-lg p-8 max-h-full  bg-white bg-opacity-10 ">
+          <div id="scrollable" className=" scroll  overflow-y-auto border border-neutral-700 rounded-lg sm:p-8  max-h-full  bg-white bg-opacity-10 ">
             <UserContent
               cardData={cardData}
               setCardData={setCardData}
