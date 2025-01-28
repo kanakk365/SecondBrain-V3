@@ -4,6 +4,8 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 const extractVideoId = (url: string): string | null => {
     if (!url) return null;
     
@@ -19,31 +21,58 @@ const extractVideoId = (url: string): string | null => {
     
     return null;
 };
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 const getTranscript = async (videoId: string): Promise<string> => {
     try {
         if (!videoId) return "Invalid video ID provided";
 
-        await wait(2000);
+        // Add a small delay to avoid rate limiting
+        await wait(1000);
 
-        const transcriptItems = await YoutubeTranscript.fetchTranscript(videoId, {
-            lang: 'en'  // Only using supported configuration options
-        });
-
+        // Try English transcript first
+        const transcriptItems = await YoutubeTranscript.fetchTranscript(videoId);
+        
         if (!transcriptItems || transcriptItems.length === 0) {
             return "No transcript available for this video";
         }
 
-        return transcriptItems.map(item => item.text).join(" ");
+        // Process transcript text
+        const processedText = transcriptItems
+            .map(item => item.text.trim())
+            .filter(text => text.length > 0)
+            .join(" ")
+            .replace(/\s+/g, " ")
+            .trim();
+
+        if (!processedText) {
+            return "Empty transcript content";
+        }
+
+        return processedText;
+
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
-        console.error(`Transcript Error: ${errorMessage}`);
-        
-        if (error instanceof Error && error.message.includes("No captions found")) {
-            return "No captions available for this video. Please check if the video has closed captions enabled.";
+        console.error(`Transcript Error:`, errorMessage);
+
+        if (error instanceof Error) {
+            if (error.message.includes("too many requests")) {
+                // Add longer delay for rate limiting
+                await wait(5000);
+                try {
+                    const retryTranscript = await YoutubeTranscript.fetchTranscript(videoId);
+                    return retryTranscript.map(item => item.text).join(" ");
+                } catch (retryError) {
+                    console.error("Retry failed:", retryError);
+                    return "Rate limit reached. Please try again later.";
+                }
+            }
+            
+            if (error.message.includes("No captions found")) {
+                return "No captions available for this video";
+            }
         }
         
-        return "No transcript generated";
+        return "Failed to get transcript";
     }
 };
 
@@ -106,8 +135,15 @@ const run = async (url: string): Promise<string> => {
             return "Invalid YouTube URL format";
         }
         
-        const transcript = await getTranscript(videoId);
-        if (transcript === "No transcript generated" || 
+        let transcript = await getTranscript(videoId);
+        
+        // If rate limited, try one more time after a delay
+        if (transcript.includes("Rate limit reached")) {
+            await wait(10000); // Wait 10 seconds
+            transcript = await getTranscript(videoId);
+        }
+        
+        if (transcript.includes("Failed to get transcript") || 
             transcript.includes("No captions available")) {
             return transcript;
         }

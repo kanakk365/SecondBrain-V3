@@ -46,55 +46,136 @@ const youtube_transcript_1 = require("youtube-transcript");
 const generative_ai_1 = require("@google/generative-ai");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const extractVideoId = (url) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
+    if (!url)
+        return null;
+    const patterns = [
+        /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i,
+        /^([^"&?\/\s]{11})$/i
+    ];
+    for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match && match[1])
+            return match[1];
+    }
+    return null;
 };
 const getTranscript = (videoId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        if (!videoId)
+            return "Invalid video ID provided";
+        // Add a small delay to avoid rate limiting
+        yield wait(1000);
+        // Try English transcript first
         const transcriptItems = yield youtube_transcript_1.YoutubeTranscript.fetchTranscript(videoId);
-        return transcriptItems.map(item => item.text).join(" ");
+        if (!transcriptItems || transcriptItems.length === 0) {
+            return "No transcript available for this video";
+        }
+        // Process transcript text
+        const processedText = transcriptItems
+            .map(item => item.text.trim())
+            .filter(text => text.length > 0)
+            .join(" ")
+            .replace(/\s+/g, " ")
+            .trim();
+        if (!processedText) {
+            return "Empty transcript content";
+        }
+        return processedText;
     }
     catch (error) {
-        throw new Error("Transcript not available for this video");
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        console.error(`Transcript Error:`, errorMessage);
+        if (error instanceof Error) {
+            if (error.message.includes("too many requests")) {
+                // Add longer delay for rate limiting
+                yield wait(5000);
+                try {
+                    const retryTranscript = yield youtube_transcript_1.YoutubeTranscript.fetchTranscript(videoId);
+                    return retryTranscript.map(item => item.text).join(" ");
+                }
+                catch (retryError) {
+                    console.error("Retry failed:", retryError);
+                    return "Rate limit reached. Please try again later.";
+                }
+            }
+            if (error.message.includes("No captions found")) {
+                return "No captions available for this video";
+            }
+        }
+        return "Failed to get transcript";
     }
 });
-const genai = new generative_ai_1.GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genai.getGenerativeModel({ model: 'gemini-pro' });
+const initializeGemini = () => {
+    if (!process.env.GEMINI_API_KEY) {
+        console.error("GEMINI_API_KEY is missing in environment variables");
+        return null;
+    }
+    try {
+        const genai = new generative_ai_1.GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        return genai.getGenerativeModel({ model: 'gemini-pro' });
+    }
+    catch (error) {
+        console.error("Failed to initialize Gemini AI:", error);
+        return null;
+    }
+};
 const summarizeWithGemini = (text) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const prompt = `Summarize the following YouTube video transcript into 10 concise bullet points focusing on key points and main ideas. Use markdown formatting for the bullet points:\n\n${text}`;
+        if (!text || text.length < 10) {
+            return "Insufficient content to summarize";
+        }
+        const model = initializeGemini();
+        if (!model) {
+            return "AI model initialization failed";
+        }
+        const prompt = `
+Please provide a comprehensive summary of the following YouTube video transcript. 
+Format the output as follows:
+
+1. Main Topic/Theme
+2. Key Points (5-7 bullet points)
+3. Important Details
+4. Conclusion/Takeaways
+
+Transcript:
+${text}
+`;
         const result = yield model.generateContent(prompt);
         const response = yield result.response;
-        return response.text() || "No summary generated";
+        return response.text() || "Summary generation failed";
     }
     catch (error) {
         console.error("Gemini Error:", error);
-        return "Please try again";
+        return "No summary generated";
     }
 });
 const run = (url) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        if (!url) {
+            return "URL is required";
+        }
         const videoId = extractVideoId(url);
         if (!videoId) {
-            throw new Error("Invalid YouTube URL");
+            return "Invalid YouTube URL format";
         }
-        const transcript = yield getTranscript(videoId);
-        if (!transcript) {
-            throw new Error("No transcript available");
+        let transcript = yield getTranscript(videoId);
+        // If rate limited, try one more time after a delay
+        if (transcript.includes("Rate limit reached")) {
+            yield wait(10000); // Wait 10 seconds
+            transcript = yield getTranscript(videoId);
         }
-        const data = yield summarizeWithGemini(transcript);
-        return data;
+        if (transcript.includes("Failed to get transcript") ||
+            transcript.includes("No captions available")) {
+            return transcript;
+        }
+        const summary = yield summarizeWithGemini(transcript);
+        return summary;
     }
     catch (error) {
-        if (error instanceof Error) {
-            console.error("Error:", error.message);
-        }
-        else {
-            console.error("Unknown error:", error);
-        }
-        process.exit(1);
+        console.error("Error in run function:", error);
+        return "Failed to process video";
     }
 });
 exports.default = run;
