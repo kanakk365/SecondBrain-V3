@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/config/db.ts","./src/db/db.ts","./src/middleware/middleware.ts","./src/routes/brain.ts","./src/routes/content.ts","./src/routes/tags.ts","./src/routes/user.ts"],"version":"5.7.2"}
+{"root":["./src/index.ts","./src/ai/youtube.ts","./src/config/db.ts","./src/db/db.ts","./src/middleware/middleware.ts","./src/routes/brain.ts","./src/routes/content.ts","./src/routes/tags.ts","./src/routes/user.ts"],"version":"5.7.2"}

@@ -76,6 +76,12 @@ module.exports = {
                 0px 1px 0px 0px rgba(25,28,33,0.02), 
                 0px 0px 0px 1px rgba(25,28,33,0.08)`,
       },
+      backgroundImage: {
+        'pattern-overlay': `
+          linear-gradient(rgba(75,85,99,0.5), rgba(75,85,99,0.5)), 
+          url('/background.jpg')
+        `,
+      }
     },
   },
   plugins: [

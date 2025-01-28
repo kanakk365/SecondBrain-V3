@@ -1,9 +1,10 @@
 import { Request, Response, Router } from "express";
 import mongoose from "mongoose";
 import { ContentModel } from "../db/db";
+import run from "../ai/youtube";
 const contentRouter = Router()
 
-contentRouter.get("./test", (req: Request, res: Response) => {
+contentRouter.get("/test", (req: Request, res: Response) => {
     res.json({
         message: "testing /content/test route"
     })
@@ -46,6 +47,33 @@ contentRouter.post("/create", async (req: Request, res: Response) => {
         })
     }
 })
+
+contentRouter.post("/summarize" , async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { url} = req.body;
+        console.log(url)
+        if(!url){
+            res.status(400).json({
+                message: "Youtube URL is required"
+            })
+            return
+        }
+        
+        const data = await run(url)
+        console.log(data)
+        if(!data) {
+            res.status(400).json({
+                message:" No Transcript "
+            })
+            return
+        }
+        res.status(201).json({
+            data: data
+        })
+    } catch (error) {
+        res.status(500).json({ message : error });
+    }
+} )
 
 contentRouter.delete("/remove", async (req: Request, res: Response): Promise<void> => {
     try {

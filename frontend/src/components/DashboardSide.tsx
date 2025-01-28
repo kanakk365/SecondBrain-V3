@@ -98,8 +98,10 @@ export function DashboardSide() {
     <div
       className={` rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-[#262626] flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden w-full h-[100vh]`}
     >
-      <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10">
+    <div className="absolute inset-0 bg-[url('/background.jpg')] bg-cover bg-center opacity-10 dark:invert dark:opacity-10 "></div>
+      
+      <Sidebar  open={open} setOpen={setOpen}>
+        <SidebarBody className="justify-between gap-10 z-10">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             {open ? <Logo /> : <BrainCircuitIcon />}
             <div className="mt-8 flex flex-col gap-2">
@@ -175,6 +177,10 @@ const Dashboard = ({
 }) => {
   const [isCreateNewOpen, setIsCreateNewOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  // const [isSummaryOpen , setIsSummaryOpen] = useState(false)
+  // const [summary , setSummary] = useState(false)
+
+ 
 
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
@@ -312,8 +318,6 @@ const Dashboard = ({
     }
   };
 
-  // Example usage
-  // Output: 1617688615324805120
 
   const ImportLinkSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -570,9 +574,6 @@ const Dashboard = ({
     }
   },[])
 
- 
-
-
   useEffect(() => {
     setCardLoading(true);
 
@@ -713,7 +714,7 @@ const Dashboard = ({
   };
 
   return (
-    <div className="flex flex-1 h-full">
+    <div className="flex flex-1 h-full z-10">
       <div className="border border-neutral-700 p-10 md:p-10 rounded-tl-2xl  flex flex-col gap-2 flex-1 w-full  h-full">
         <div className="flex flex-col gap-2 h-full">
           {/* Header Section */}
@@ -1117,6 +1118,11 @@ const Dashboard = ({
               </div>
             </div>
           )}
+          {/* {isSummaryOpen && (
+            <div>
+
+            </div>
+          )} */}
           <Separator />
           {/* Scrollable Div */}
           <div id="scrollable" className=" scroll  overflow-y-auto border border-neutral-700 rounded-lg p-8 max-h-full  bg-gray-300 bg-opacity-5 ">

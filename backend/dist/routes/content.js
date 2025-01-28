@@ -15,8 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const mongoose_1 = __importDefault(require("mongoose"));
 const db_1 = require("../db/db");
+const youtube_1 = __importDefault(require("../ai/youtube"));
 const contentRouter = (0, express_1.Router)();
-contentRouter.get("./test", (req, res) => {
+contentRouter.get("/test", (req, res) => {
     res.json({
         message: "testing /content/test route"
     });
@@ -49,6 +50,32 @@ contentRouter.post("/create", (req, res) => __awaiter(void 0, void 0, void 0, fu
             message: "Error something went wrong",
             error: error
         });
+    }
+}));
+contentRouter.post("/summarize", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { url } = req.body;
+        console.log(url);
+        if (!url) {
+            res.status(400).json({
+                message: "Youtube URL is required"
+            });
+            return;
+        }
+        const data = yield (0, youtube_1.default)(url);
+        console.log(data);
+        if (!data) {
+            res.status(400).json({
+                message: " No Transcript "
+            });
+            return;
+        }
+        res.status(201).json({
+            data: data
+        });
+    }
+    catch (error) {
+        res.status(500).json({ message: error });
     }
 }));
 contentRouter.delete("/remove", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
