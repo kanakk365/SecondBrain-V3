@@ -15,7 +15,7 @@ const getTranscript = async (videoId: string): Promise<string> => {
         const transcriptItems = await YoutubeTranscript.fetchTranscript(videoId);
         return transcriptItems.map(item => item.text).join(" ");
     } catch (error) {
-        throw new Error("Transcript not available for this video");
+        return "No Transcript generated "
     }
 }
 
@@ -39,12 +39,12 @@ const run = async (url: string) => {
     try {
         const videoId = extractVideoId(url);
         if (!videoId) {
-            throw new Error("Invalid YouTube URL");
+            return "No summary generated"
         }
         
         const transcript = await getTranscript(videoId);
         if (!transcript) {
-            throw new Error("No transcript available");
+            return "No summary generated"
         }
         
         const data = await summarizeWithGemini(transcript);
