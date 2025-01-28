@@ -42,11 +42,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const youtube_transcript_1 = require("youtube-transcript");
+const googleapis_1 = require("googleapis");
 const generative_ai_1 = require("@google/generative-ai");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
-const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+// Initialize YouTube API
+const youtube = googleapis_1.google.youtube('v3');
 const extractVideoId = (url) => {
     if (!url)
         return null;
@@ -62,47 +63,49 @@ const extractVideoId = (url) => {
     return null;
 };
 const getTranscript = (videoId) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         if (!videoId)
             return "Invalid video ID provided";
-        // Add a small delay to avoid rate limiting
-        yield wait(1000);
-        // Try English transcript first
-        const transcriptItems = yield youtube_transcript_1.YoutubeTranscript.fetchTranscript(videoId);
-        if (!transcriptItems || transcriptItems.length === 0) {
-            return "No transcript available for this video";
+        if (!process.env.YOUTUBE_API_KEY) {
+            console.error("YouTube API key is missing");
+            return "API configuration error";
         }
-        // Process transcript text
-        const processedText = transcriptItems
-            .map(item => item.text.trim())
-            .filter(text => text.length > 0)
-            .join(" ")
-            .replace(/\s+/g, " ")
+        // First, get the caption tracks
+        const captions = yield youtube.captions.list({
+            key: process.env.YOUTUBE_API_KEY,
+            part: ['snippet'],
+            videoId: videoId
+        });
+        // Find English captions
+        const englishCaption = (_a = captions.data.items) === null || _a === void 0 ? void 0 : _a.find(caption => { var _a; return ((_a = caption.snippet) === null || _a === void 0 ? void 0 : _a.language) === 'en'; });
+        if (!englishCaption || !englishCaption.id) {
+            return "No English captions available for this video";
+        }
+        // Download the actual caption track
+        const captionTrack = yield youtube.captions.download({
+            key: process.env.YOUTUBE_API_KEY,
+            id: englishCaption.id,
+            tfmt: 'srt'
+        });
+        // Convert the caption data to plain text
+        const transcriptText = captionTrack.data.toString()
+            // Remove SRT formatting
+            .replace(/\d+\n\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}\n/g, '')
+            // Remove empty lines
+            .replace(/\n\n/g, ' ')
+            // Remove remaining newlines
+            .replace(/\n/g, ' ')
+            // Remove multiple spaces
+            .replace(/\s+/g, ' ')
             .trim();
-        if (!processedText) {
-            return "Empty transcript content";
-        }
-        return processedText;
+        return transcriptText || "No transcript content found";
     }
     catch (error) {
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
-        console.error(`Transcript Error:`, errorMessage);
-        if (error instanceof Error) {
-            if (error.message.includes("too many requests")) {
-                // Add longer delay for rate limiting
-                yield wait(5000);
-                try {
-                    const retryTranscript = yield youtube_transcript_1.YoutubeTranscript.fetchTranscript(videoId);
-                    return retryTranscript.map(item => item.text).join(" ");
-                }
-                catch (retryError) {
-                    console.error("Retry failed:", retryError);
-                    return "Rate limit reached. Please try again later.";
-                }
-            }
-            if (error.message.includes("No captions found")) {
-                return "No captions available for this video";
-            }
+        console.error(`YouTube API Error:`, errorMessage);
+        if (error instanceof Error && error.message.includes("quotaExceeded")) {
+            return "YouTube API quota exceeded. Please try again tomorrow.";
         }
         return "Failed to get transcript";
     }
@@ -160,14 +163,9 @@ const run = (url) => __awaiter(void 0, void 0, void 0, function* () {
         if (!videoId) {
             return "Invalid YouTube URL format";
         }
-        let transcript = yield getTranscript(videoId);
-        // If rate limited, try one more time after a delay
-        if (transcript.includes("Rate limit reached")) {
-            yield wait(10000); // Wait 10 seconds
-            transcript = yield getTranscript(videoId);
-        }
+        const transcript = yield getTranscript(videoId);
         if (transcript.includes("Failed to get transcript") ||
-            transcript.includes("No captions available")) {
+            transcript.includes("No English captions available")) {
             return transcript;
         }
         const summary = yield summarizeWithGemini(transcript);
