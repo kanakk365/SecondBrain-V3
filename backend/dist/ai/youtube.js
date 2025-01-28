@@ -41,12 +41,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const youtube_transcript_1 = require("youtube-transcript");
-const openai_1 = __importDefault(require("openai"));
+const generative_ai_1 = require("@google/generative-ai");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 const extractVideoId = (url) => {
@@ -63,38 +60,18 @@ const getTranscript = (videoId) => __awaiter(void 0, void 0, void 0, function* (
         throw new Error("Transcript not available for this video");
     }
 });
-const openai = new openai_1.default({
-    apiKey: process.env.OPENAI_API_KEY // Never hardcode API keys!
-});
-const chunkText = (text, maxLength = 3000) => {
-    const chunks = [];
-    for (let i = 0; i < text.length; i += maxLength) {
-        chunks.push(text.slice(i, i + maxLength));
-    }
-    return chunks;
-};
-const summarizeWithOpenAI = (text) => __awaiter(void 0, void 0, void 0, function* () {
+const genai = new generative_ai_1.GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genai.getGenerativeModel({ model: 'gemini-pro' });
+const summarizeWithGemini = (text) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const chunks = chunkText(text);
-        let fullSummary = "";
-        for (const chunk of chunks) {
-            const completion = yield openai.chat.completions.create({
-                messages: [{
-                        role: "system",
-                        content: "Summarize this YouTube video transcript in concise 10 bullet points. Focus on key points and main ideas. Use markdown formatting."
-                    }, {
-                        role: "user",
-                        content: chunk
-                    }],
-                model: "gpt-3.5-turbo"
-            });
-            fullSummary += completion.choices[0].message.content + "\n";
-        }
-        return fullSummary || "No summary generated";
+        const prompt = `Summarize the following YouTube video transcript into 10 concise bullet points focusing on key points and main ideas. Use markdown formatting for the bullet points:\n\n${text}`;
+        const result = yield model.generateContent(prompt);
+        const response = yield result.response;
+        return response.text() || "No summary generated";
     }
     catch (error) {
-        console.error("OpenAI Error:", error);
-        throw new Error("Failed to generate summary");
+        console.error("Gemini Error:", error);
+        return "Please try again";
     }
 });
 const run = (url) => __awaiter(void 0, void 0, void 0, function* () {
@@ -107,7 +84,7 @@ const run = (url) => __awaiter(void 0, void 0, void 0, function* () {
         if (!transcript) {
             throw new Error("No transcript available");
         }
-        const data = yield summarizeWithOpenAI(transcript);
+        const data = yield summarizeWithGemini(transcript);
         return data;
     }
     catch (error) {

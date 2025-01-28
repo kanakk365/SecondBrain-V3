@@ -1,5 +1,5 @@
 import { YoutubeTranscript } from "youtube-transcript";
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import * as dotenv from "dotenv";
 
 dotenv.config();
@@ -19,43 +19,19 @@ const getTranscript = async (videoId: string): Promise<string> => {
     }
 }
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY // Never hardcode API keys!
-});
+const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const model = genai.getGenerativeModel({ model: 'gemini-pro' });
 
-
-const chunkText = (text: string, maxLength = 3000): string[] => {
-    const chunks = [];
-    for (let i = 0; i < text.length; i += maxLength) {
-        chunks.push(text.slice(i, i + maxLength));
-    }
-    return chunks;
-}
-
-const summarizeWithOpenAI = async (text: string): Promise<string> => {
+const summarizeWithGemini = async (text: string): Promise<string> => {
     try {
-        const chunks = chunkText(text);
-        let fullSummary = "";
+        const prompt = `Summarize the following YouTube video transcript into 10 concise bullet points focusing on key points and main ideas. Use markdown formatting for the bullet points:\n\n${text}`;
         
-        for (const chunk of chunks) {
-            const completion = await openai.chat.completions.create({
-                messages: [{
-                    role: "system",
-                    content: "Summarize this YouTube video transcript in concise 10 bullet points. Focus on key points and main ideas. Use markdown formatting."
-                }, {
-                    role: "user",
-                    content: chunk
-                }],
-                model: "gpt-3.5-turbo"
-            });
-
-            fullSummary += completion.choices[0].message.content + "\n";
-        }
-
-        return fullSummary || "No summary generated";
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        return response.text() || "No summary generated";
     } catch (error) {
-        console.error("OpenAI Error:", error);
-        throw new Error("Failed to generate summary");
+        console.error("Gemini Error:", error);
+        return "No summary generated"
     }
 }
 
@@ -71,8 +47,8 @@ const run = async (url: string) => {
             throw new Error("No transcript available");
         }
         
-        const data = await summarizeWithOpenAI(transcript);
-        return data
+        const data = await summarizeWithGemini(transcript);
+        return data;
     } catch (error) {
         if (error instanceof Error) {
             console.error("Error:", error.message);
@@ -83,5 +59,4 @@ const run = async (url: string) => {
     }
 }
 
-
-export default run
+export default run;

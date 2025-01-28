@@ -156,7 +156,7 @@ export default function CardComponent({
     try {
       const res = await axios.post(ApiRoutes.summary , {url: link})
       const data = res.data
-      dispatch(setSummary(data))
+      dispatch(setSummary(data.data))
       dispatch(setOpen(true))
       
     } catch (error) {

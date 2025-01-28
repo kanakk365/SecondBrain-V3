@@ -6,7 +6,7 @@ interface ContentState {
 }
 
 const initialState: ContentState = {
-  summary: null,
+  summary: "",
   open: false
 };
 

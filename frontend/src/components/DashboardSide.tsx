@@ -101,7 +101,7 @@ export function DashboardSide() {
     <div className="absolute inset-0 bg-[url('/background.jpg')] bg-cover bg-center opacity-10 dark:invert dark:opacity-10 "></div>
       
       <Sidebar  open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10 z-10">
+        <SidebarBody className="justify-between gap-10 z-50">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             {open ? <Logo /> : <BrainCircuitIcon />}
             <div className="mt-8 flex flex-col gap-2">
@@ -177,8 +177,17 @@ const Dashboard = ({
 }) => {
   const [isCreateNewOpen, setIsCreateNewOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
-  // const [isSummaryOpen , setIsSummaryOpen] = useState(false)
-  // const [summary , setSummary] = useState(false)
+  const [isSummaryOpen , setIsSummaryOpen] = useState(false)
+  const [summary , setSummary] = useState("")
+  const [points , setPoints]= useState<string[]>([])
+
+  useEffect(()=>{
+    const points = summary.split('- ').filter(point => point.trim() !== '').map(point=> point.trim());
+    console.log(points)
+    setPoints(points)
+  },[summary, isSummaryOpen])
+
+
 
  
 
@@ -486,6 +495,7 @@ const Dashboard = ({
     setLink("");
     setAlltagsId([]);
     setType("");
+    setIsSummaryOpen(false)
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -650,6 +660,15 @@ const Dashboard = ({
    }
    generateQr()
   },[hash])
+
+  const sum = useSelector((state: RootState) => state.content.summary)
+  const openCheck = useSelector((state: RootState) => state.content.open)
+  useEffect(()=>{
+     if (sum !== null) {
+       setSummary(sum);
+     }
+     setIsSummaryOpen(openCheck);
+  }, [sum, openCheck])
 
   const shareBrain = async () => {
     const sharelink = `${linkToCopy}/share/brain/${hash}`
@@ -1118,14 +1137,31 @@ const Dashboard = ({
               </div>
             </div>
           )}
-          {/* {isSummaryOpen && (
-            <div>
-
+          {isSummaryOpen && (
+            <div className="fixed inset-0 z-50">
+            {/* Backdrop */}
+            <div 
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm" 
+              onClick={onClose}
+            />
+            
+            {/* Modal */}
+            <div className="fixed left-1/2 top-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2 p-4 sm:p-8">
+              <div className="mx-auto max-h-[70vh] w-full max-w-2xl overflow-y-auto rounded-md bg-black p-6 shadow-xl flex flex-col">
+                {points.map((point, index) => (
+                  <p key={index} className="mb-3 text-gray-100 last:mb-0">
+                    {point}
+                  </p>
+                ))}
+                <Button onClick={onClose} className="">Close</Button>
+              </div>
+              
             </div>
-          )} */}
+          </div>
+          )}
           <Separator />
           {/* Scrollable Div */}
-          <div id="scrollable" className=" scroll  overflow-y-auto border border-neutral-700 rounded-lg p-8 max-h-full  bg-gray-300 bg-opacity-5 ">
+          <div id="scrollable" className=" scroll  overflow-y-auto border border-neutral-700 rounded-lg p-8 max-h-full  bg-white bg-opacity-10 ">
             <UserContent
               cardData={cardData}
               setCardData={setCardData}
