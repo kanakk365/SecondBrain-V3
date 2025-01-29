@@ -90,7 +90,7 @@ export default function SharePage () {
     )
 
   return (
-    <div className='min-h-screen flex flex-col items-center mx-auto bg-transparent max-w-full px-28 rounded-md w-screen bg-[#0e1012]'>
+    <div className='min-h-screen flex flex-col items-center mx-auto bg-transparent max-w-full px-2 sm:px-28 rounded-md w-screen bg-[#0e1012]'>
       {/* Header Section */}
       <div className='p-10 md:p-10 bg-transparent flex flex-col items-center gap-2'>
         <h1 className='text-xl md:text-3xl bg-gradient-to-tr from-purple-300/80 to-white/90 bg-clip-text text-transparent'>
