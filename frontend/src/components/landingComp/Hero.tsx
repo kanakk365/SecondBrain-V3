@@ -28,10 +28,10 @@ const Hero = () => {
               <Link to={"/login"} ><button className="px-8 py-4 bg-gradient-to-r from-purple-600/80 to-purple-400/90  text-white rounded-full font-medium hover:opacity-90 transition-all transform hover:scale-105">
                 Get Started - It's Free
               </button></Link>
-              
-              <button className="px-8 py-4 max-w-40 bg-white/10 text-white rounded-full font-medium hover:bg-white/20 transition-all backdrop-blur-sm">
+              <Link to={"https://youtu.be/mrTKk7OxJFw"}><button className="px-8 py-4 max-w-40 bg-white/10 text-white rounded-full font-medium hover:bg-white/20 transition-all backdrop-blur-sm">
                 Watch Demo
-              </button>
+              </button></Link>
+              
             </div>
 
             <div className="mt-12 flex items-center justify-center lg:justify-start space-x-8 animate__animated animate__fadeInUp animate__delay-3s">
