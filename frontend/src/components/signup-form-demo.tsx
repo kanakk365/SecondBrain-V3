@@ -98,13 +98,13 @@ export default function SignupForm() {
           <Input
             className="bg-[#020617]"
             id="password"
-            placeholder="••••••••"
+            placeholder="Min Pass Length 8 char"
             type="password"
             onChange={(e) => setPassword(e.target.value)}
           />
         </LabelInputContainer>
 
-        <button
+        <button 
           className="bg-gradient-to-br relative group/btn block  w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
           type="submit"
         >
