@@ -27,30 +27,29 @@ const iconMap: { [key: string]: React.ElementType } = {
   tweet: Twitter,
   video: Youtube,
   link: Link,
-  article: FileText, // Map additional icons here
+  article: FileText, 
   image: FileImage
 }
 
 export default function SharePage () {
-  const { hash } = useParams<{ hash: string }>() // Extract the hash from URL
+  const { hash } = useParams<{ hash: string }>() 
   const [content, setContent] = useState<{
     user: { _id: string; username: string }
     sharedContents: any
-  } | null>(null) // State to store fetched content
+  } | null>(null) 
   const [loading, setLoading] = useState<boolean>(true)
   const [alltags, setAllTags] = useState<AllTagsProps[]>([])
 
   useEffect(() => {
-    // console.log(ApiRoutes.share + '/' + hash)
+ 
     const fetchContent = async () => {
       try {
-        const response = await axios.get(ApiRoutes.share + '/' + hash) // Adjust API endpoint as needed
-        // console.log(response.data.sharedContents)
-        // console.log(response.data.userId)
+        const response = await axios.get(ApiRoutes.share + '/' + hash) 
+       
         if (response.status === 200 || response.statusText === 'OK') {
-          //   console.log('yeyy we got it!!!!')
+         
           setLoading(false)
-          setContent(response.data) // Assuming the server returns { content: "..." }
+          setContent(response.data) 
         } else {
           console.log('Failed to fetch content.')
         }
@@ -72,9 +71,9 @@ export default function SharePage () {
     }
 
     fetchTags()
-    // console.log(content?.sharedContents)
-    fetchContent() // Fetch content when component mounts
-  }, [hash]) // Dependency array ensures this runs when the hash changes
+   
+    fetchContent() 
+  }, [hash]) 
 
   if (loading)
     return (
@@ -91,7 +90,7 @@ export default function SharePage () {
 
   return (
     <div className='min-h-screen flex flex-col items-center mx-auto bg-transparent max-w-full px-2 sm:px-28 rounded-md w-screen bg-[#0e1012]'>
-      {/* Header Section */}
+      
       <div className='p-10 md:p-10 bg-transparent flex flex-col items-center gap-2'>
         <h1 className='text-xl md:text-3xl bg-gradient-to-tr from-purple-300/80 to-white/90 bg-clip-text text-transparent'>
           {`${content.user.username}'s brain`}
@@ -99,12 +98,12 @@ export default function SharePage () {
         <Separator />
       </div>
 
-      {/* Main Content Section */}
+      
       <div className='w-full flex-grow  flex justify-center bg-[#0e1012]'>
         <SharedCard contents={content.sharedContents} alltags={alltags} />
       </div>
 
-      {/* Footer Section */}
+      
       <div className='mt-auto w-full'>
         <Footer />
       </div>
@@ -112,7 +111,7 @@ export default function SharePage () {
   )
 }
 
-// const SharedCard = (contents:any, alltags:AllTagsProps[]) => {
+
 const SharedCard = ({
   contents,
   alltags
@@ -187,10 +186,10 @@ const SharedCard = ({
 
   return (
     <div className='bg-[#0e1012]'>
-      {/* <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 bg-slate-700/10 p-5 rounded-lg min-h-96'> */}
+    
       <div className='columns-1 md:columns-2 lg:columns-3 gap-1 bg-[#0e1012] w-full rounded-lg '>
         {contents.map((content: any, index: number) => {
-          const IconComponent = iconMap[content.type] || FileText // Fallback to a default icon if not found
+          const IconComponent = iconMap[content.type] || FileText 
 
           return (
             <div className='p-3 break-inside-avoid  w-full'>
@@ -204,7 +203,7 @@ const SharedCard = ({
                 <div className='p-2  w-full'>
                   <div className='flex flex-row items-center justify-between space-y-0 pb-2 '>
                     <div className='flex gap-2 items-center'>
-                      {/* <div className='text-sm'>{content.type}</div> */}
+                     
                       <IconComponent className='h-4 w-4' />
                       <div className='font-medium'>{content.title}</div>
                     </div>
@@ -236,8 +235,7 @@ const SharedCard = ({
                       </div>
                     )}
                   </div>
-                  {/* <div className='text-gray-400'>{content.tags.map((tagId:string, index:number) => <div key={index}>{tagId}</div>)}</div> */}
-                  {/* <div className='text-gray-400'>{content.tags.map((tagId:string, index:number) => <div key={index}>{tagId}</div>)}</div> */}
+                 
                   <div className=' py-2  bottom-0'>
                     <div className='text-[#5E43EC] flex gap-1 flex-wrap'>
                       {getTagTitles(content.tags).map(tag => (

@@ -1055,10 +1055,10 @@ const Dashboard = ({
           {isShareOpen && (
             <div
               className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300"
-              onClick={onClose} // Close modal when clicking background
+              onClick={onClose} 
             >
               <div
-                onClick={(e) => e.stopPropagation()} // Prevents modal click from closing it
+                onClick={(e) => e.stopPropagation()} 
                 className="border border-black/[0.2] dark:border-white/[0.2]   bg-[#111111] p-6 rounded-lg shadow-lg w-full max-w-md transform transition-transform duration-300 scale-100"
               >
                 <h2 className="text-white text-xl mb-4 text-center">
@@ -1139,13 +1139,13 @@ const Dashboard = ({
           )}
           {isSummaryOpen && (
             <div className="fixed inset-0 z-50">
-            {/* Backdrop */}
+            
             <div 
               className="fixed inset-0 bg-black/50 backdrop-blur-sm" 
               onClick={onClose}
             />
             
-            {/* Modal */}
+           
             <div className="fixed left-1/2 top-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2 p-4 sm:p-8">
               <div className="mx-auto max-h-[70vh] w-full max-w-2xl overflow-y-auto rounded-md bg-black p-6 shadow-xl flex flex-col">
                 {points.map((point, index) => (
@@ -1160,7 +1160,7 @@ const Dashboard = ({
           </div>
           )}
           <Separator />
-          {/* Scrollable Div */}
+          
           <div id="scrollable" className=" scroll  overflow-y-auto border border-neutral-700 rounded-lg sm:p-8  max-h-full  bg-white bg-opacity-10 ">
             <UserContent
               cardData={cardData}
