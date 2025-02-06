@@ -20,7 +20,8 @@ const ContentSchema = new mongoose.Schema({
     description:{type : String  , require : true},
     tags : [{type : mongoose.Types.ObjectId , ref: 'tags'}],
     date: Date,
-    userId : {type : mongoose.Types.ObjectId , ref: 'users' , require:true} 
+    userId : {type : mongoose.Types.ObjectId , ref: 'users' , require:true},
+    embeddings:{type:[Number] , default:[]}
 
 })
 

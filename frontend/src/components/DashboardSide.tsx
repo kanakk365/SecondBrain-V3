@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "./ui/sidebar"; // Adjust the path as necessary
 import { Link, useNavigate } from "react-router-dom"; // React Router for navigation
 import { motion } from "framer-motion";
-import QRcode  from "qrcode";
+import QRcode from "qrcode";
 import {
   BrainCircuit,
   BrainCircuitIcon,
@@ -32,6 +32,8 @@ import { clearAuth } from "@/store/slice/userSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Switch } from "./ui/switch";
+import { Input } from "./ui/input";
+import ShinyButton from "./ui/shiny-button";
 
 export function DashboardSide() {
   const dispatch = useDispatch();
@@ -75,20 +77,20 @@ export function DashboardSide() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user);
-  console.log(user)
+  console.log(user);
   const userData = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [selectedType, setSelectedType] = useState<CreateCardType>(null);
 
   const [signOut, setSignout] = useState(false);
-  console.log(signOut)
+  console.log(signOut);
 
   const signout = () => {
     setSignout(true);
   };
 
   const signOutHandler = () => {
-    signout()
+    signout();
     dispatch(clearAuth());
     localStorage.removeItem("token");
     navigate("/");
@@ -98,9 +100,9 @@ export function DashboardSide() {
     <div
       className={` rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-[#262626] flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden w-full h-[100vh]`}
     >
-    <div className="absolute inset-0 bg-[url('/background.jpg')] bg-cover bg-center opacity-10 dark:invert dark:opacity-10 "></div>
-      
-      <Sidebar  open={open} setOpen={setOpen}>
+      <div className="absolute inset-0 bg-[url('/background.jpg')] bg-cover bg-center opacity-10 dark:invert dark:opacity-10 "></div>
+
+      <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10 z-50">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             {open ? <Logo /> : <BrainCircuitIcon />}
@@ -145,7 +147,7 @@ export const Logo = () => {
       to="/"
       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
     >
-      <BrainCircuitIcon color="#ffffff"/>
+      <BrainCircuitIcon color="#ffffff" />
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -177,19 +179,18 @@ const Dashboard = ({
 }) => {
   const [isCreateNewOpen, setIsCreateNewOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
-  const [isSummaryOpen , setIsSummaryOpen] = useState(false)
-  const [summary , setSummary] = useState("")
-  const [points , setPoints]= useState<string[]>([])
+  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+  const [summary, setSummary] = useState("");
+  const [points, setPoints] = useState<string[]>([]);
 
-  useEffect(()=>{
-    const points = summary.split('- ').filter(point => point.trim() !== '').map(point=> point.trim());
-    console.log(points)
-    setPoints(points)
-  },[summary, isSummaryOpen])
-
-
-
- 
+  useEffect(() => {
+    const points = summary
+      .split("- ")
+      .filter((point) => point.trim() !== "")
+      .map((point) => point.trim());
+    console.log(points);
+    setPoints(points);
+  }, [summary, isSummaryOpen]);
 
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
@@ -208,7 +209,7 @@ const Dashboard = ({
   const [createCardData, setCreateCardData] = useState<CreateCardProp[]>([]);
   const [dataUpdatedCount, setDataUpdatedCount] = useState(0);
   const [cardLoading, setCardLoading] = useState(false);
-  console.log(createCardData, cardLoading)
+  console.log(createCardData, cardLoading);
   const [importLink, setImportLink] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -224,6 +225,8 @@ const Dashboard = ({
   const [formError, setFormError] = useState<{
     [key: string]: string;
   }>({});
+
+  const [searchVal , setSearchVal]= useState("")
 
   const fetchTags = async () => {
     try {
@@ -241,7 +244,7 @@ const Dashboard = ({
       const res = await axios.post(ApiRoutes.createtag, {
         title: tagTitle.toLowerCase(),
       });
-      console.log(res.data)
+      console.log(res.data);
       const newAllTags = await axios.get(ApiRoutes.alltags);
       setAllTags(newAllTags.data.tags);
 
@@ -326,7 +329,6 @@ const Dashboard = ({
       return existingTag._id;
     }
   };
-
 
   const ImportLinkSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -495,7 +497,7 @@ const Dashboard = ({
     setLink("");
     setAlltagsId([]);
     setType("");
-    setIsSummaryOpen(false)
+    setIsSummaryOpen(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -575,14 +577,13 @@ const Dashboard = ({
   };
   const [cardData, setCardData] = useState<CreateCardProp[]>([]);
   const [serverDown, setServerDown] = useState(false);
-  console.log(serverDown)
-  
+  console.log(serverDown);
 
-  useEffect(()=>{
-    if(typeof window !== "undefined"){
-      setLinkToCopy(`${window.location.origin}`)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setLinkToCopy(`${window.location.origin}`);
     }
-  },[])
+  }, []);
 
   useEffect(() => {
     setCardLoading(true);
@@ -652,36 +653,35 @@ const Dashboard = ({
   const [shareBtnLoading, setShareBtnLoading] = useState(false);
   const [src, setSrc] = useState<string>("");
 
-  useEffect(()=>{
-   const generateQr = ()=>{
-    const sharelink = `${linkToCopy}/share/brain/${hash}`
-    QRcode.toDataURL(sharelink).then(setSrc)
-    
-   }
-   generateQr()
-  },[hash])
+  useEffect(() => {
+    const generateQr = () => {
+      const sharelink = `${linkToCopy}/share/brain/${hash}`;
+      QRcode.toDataURL(sharelink).then(setSrc);
+    };
+    generateQr();
+  }, [hash]);
 
-  const sum = useSelector((state: RootState) => state.content.summary)
-  const openCheck = useSelector((state: RootState) => state.content.open)
-  useEffect(()=>{
-     if (sum !== null) {
-       setSummary(sum);
-     }
-     setIsSummaryOpen(openCheck);
-  }, [sum, openCheck])
+  const sum = useSelector((state: RootState) => state.content.summary);
+  const openCheck = useSelector((state: RootState) => state.content.open);
+  useEffect(() => {
+    if (sum !== null) {
+      setSummary(sum);
+    }
+    setIsSummaryOpen(openCheck);
+  }, [sum, openCheck]);
 
   const shareBrain = async () => {
-    const sharelink = `${linkToCopy}/share/brain/${hash}`
+    const sharelink = `${linkToCopy}/share/brain/${hash}`;
 
     try {
-      await navigator.clipboard.writeText(sharelink)
+      await navigator.clipboard.writeText(sharelink);
     } catch (error) {
-      alert("failed to copy link")
+      alert("failed to copy link");
     }
-    setTimeout(()=>{
-      setShowCopiedMsg(false)
-    },2000)
-    setShowCopiedMsg(true)
+    setTimeout(() => {
+      setShowCopiedMsg(false);
+    }, 2000);
+    setShowCopiedMsg(true);
   };
 
   const handlePublicAccessToggle = () => {
@@ -691,7 +691,7 @@ const Dashboard = ({
     } else {
       setIsShareOpen(false);
       setOpenAccess(false);
-      shareRequest(false)
+      shareRequest(false);
     }
   };
 
@@ -732,28 +732,92 @@ const Dashboard = ({
     }
   };
 
+  const [isClear , setIsClear]= useState(false)
+
+  const handleSearch = async()=>{
+    
+    try {
+      
+      const res = await axios.post(ApiRoutes.search, {query : searchVal})
+      console.log(res)
+      setCardData(res.data)
+      setIsClear(true)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleClearSearch = async()=>{
+    const userData = localStorage.getItem("user")
+        ? JSON.parse(localStorage.getItem("user") || "{}")
+        : null;
+      const userID = userData ? userData.id : null;
+    try {
+      const res = await axios.get(ApiRoutes.contents, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        params: {
+          userID: userID,
+        },
+      });
+      
+      console.log("here");
+      console.log(res.data);
+      setCardData(res.data);
+      setIsClear(false)
+      console.log(cardData);
+    } catch (error) {
+      setServerDown(true);
+    }
+  }
+
   return (
     <div className="flex flex-1 h-full z-10">
       <div className="border border-neutral-700 md:p-10 p-2 rounded-tl-2xl  flex flex-col gap-2 flex-1 w-full  h-full">
         <div className="flex flex-col gap-2 h-full">
-          {/* Header Section */}
-          <div className="h-20 w-full rounded-lg flex justify-between items-center">
-            <div>
-              <h1 className="text-xl md:text-3xl">My Brain</h1>
-            </div>
-            <div className="flex gap-5">
-              <Button
-                onClick={openCreate}
-                variant={"ghost"}
-                className="flex justify-center items-center gap-1 text-center rounded-md bg-transparent no-underline cursor-pointer shadow-2xl leading-6 text-white border-[1px] border-slate-500 px-4 py-2 font-mono font-medium transition-colors hover:text-indigo-300"
-              >
-                <Plus /> <span className="sm:inline hidden">Create New</span>
-              </Button>
-              <Button onClick={openShare}>
-                <Share2 /> <span className="sm:inline hidden">Share</span>
-              </Button>
-            </div>
-          </div>
+         
+          <div className="h-20 w-full rounded-lg flex justify-between items-center px-4 sm:px-6">
+
+  <h1 className="text-xl md:text-3xl sm:block hidden">My Brain</h1>
+
+
+  <div className="flex items-center justify-center gap-2 sm:gap-5 flex-1">
+    <Input
+      placeholder="AI Search"
+      className="h-8 w-32 sm:w-80"
+      onChange={(e) => setSearchVal(e.target.value)}
+    />
+    {isClear ? (
+          <ShinyButton
+            onClick={handleClearSearch}
+            className="px-3 py-2 text-sm sm:text-base bg-red-500 text-white rounded-md hover:bg-red-600"
+          >
+            Clear
+          </ShinyButton>
+        ) : (
+          <ShinyButton onClick={handleSearch}>Search</ShinyButton>
+        )}
+  </div>
+
+
+  <div className="flex gap-2 sm:gap-5 items-center">
+    <Button
+      onClick={openCreate}
+      variant="ghost"
+      className="flex items-center gap-1 rounded-md border border-slate-500 px-3 py-2 text-sm sm:text-base font-mono transition-colors hover:text-indigo-300"
+    >
+      <Plus />
+      <span className="hidden sm:inline">Create New</span>
+    </Button>
+
+    <Button onClick={openShare} className="flex items-center gap-1 px-3 py-2">
+      <Share2 />
+      <span className="hidden sm:inline">Share</span>
+    </Button>
+  </div>
+</div>
+
           {selectedType && (
             <div className="flex items-center gap-2 text-md">
               <div className="bg-purple-200/10 rounded-full px-3 flex justify-center items-center gap-1">
@@ -1055,10 +1119,10 @@ const Dashboard = ({
           {isShareOpen && (
             <div
               className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300"
-              onClick={onClose} 
+              onClick={onClose}
             >
               <div
-                onClick={(e) => e.stopPropagation()} 
+                onClick={(e) => e.stopPropagation()}
                 className="border border-black/[0.2] dark:border-white/[0.2]   bg-[#111111] p-6 rounded-lg shadow-lg w-full max-w-md transform transition-transform duration-300 scale-100"
               >
                 <h2 className="text-white text-xl mb-4 text-center">
@@ -1139,29 +1203,31 @@ const Dashboard = ({
           )}
           {isSummaryOpen && (
             <div className="fixed inset-0 z-50">
-            
-            <div 
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm" 
-              onClick={onClose}
-            />
-            
-           
-            <div className="fixed left-1/2 top-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2 p-4 sm:p-8">
-              <div className="mx-auto max-h-[70vh] w-full max-w-2xl overflow-y-auto rounded-md bg-black p-6 shadow-xl flex flex-col">
-                {points.map((point, index) => (
-                  <p key={index} className="mb-3 text-gray-100 last:mb-0">
-                    {point}
-                  </p>
-                ))}
-                <Button onClick={onClose} className="">Close</Button>
+              <div
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+                onClick={onClose}
+              />
+
+              <div className="fixed left-1/2 top-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2 p-4 sm:p-8">
+                <div className="mx-auto max-h-[70vh] w-full max-w-2xl overflow-y-auto rounded-md bg-black p-6 shadow-xl flex flex-col">
+                  {points.map((point, index) => (
+                    <p key={index} className="mb-3 text-gray-100 last:mb-0">
+                      {point}
+                    </p>
+                  ))}
+                  <Button onClick={onClose} className="">
+                    Close
+                  </Button>
+                </div>
               </div>
-              
             </div>
-          </div>
           )}
           <Separator />
-          
-          <div id="scrollable" className=" scroll  overflow-y-auto border border-neutral-700 rounded-lg sm:p-8  max-h-full  bg-white bg-opacity-10 ">
+
+          <div
+            id="scrollable"
+            className=" scroll  overflow-y-auto border border-neutral-700 rounded-lg sm:p-8  max-h-full  bg-white bg-opacity-10 "
+          >
             <UserContent
               cardData={cardData}
               setCardData={setCardData}

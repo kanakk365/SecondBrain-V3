@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import mongoose from "mongoose";
 import { ContentModel } from "../db/db";
 import run from "../ai/youtube";
+import { generateEmbeddings } from "../ai/getEmbeddings";
 const contentRouter = Router()
 
 contentRouter.get("/test", (req: Request, res: Response) => {
@@ -25,6 +26,12 @@ contentRouter.post("/create", async (req: Request, res: Response) => {
             return
         }
 
+        const searchableText = `${title} ${description}`
+        console.log(searchableText)
+        const embeddings = await generateEmbeddings(searchableText)
+
+        console.log(`Emb :${embeddings}`)
+
         await ContentModel.create({
             link,
             type,
@@ -32,7 +39,8 @@ contentRouter.post("/create", async (req: Request, res: Response) => {
             description,
             date: Date.now(),
             tags,
-            userId
+            userId,
+            embeddings
         })
 
         
@@ -45,6 +53,35 @@ contentRouter.post("/create", async (req: Request, res: Response) => {
             message: "Error something went wrong",
             error: error
         })
+    }
+})
+
+contentRouter.post("/search" , async(req: Request , res:Response)=>{
+    {
+        try {
+            const {query} = req.body
+
+           if(!query) return
+            console.log(query)
+           const queryEmbedding = await generateEmbeddings(query)
+           console.log(queryEmbedding)
+
+           const results = await ContentModel.aggregate([
+            {
+                $vectorSearch: {
+                    queryVector: queryEmbedding,
+                    path: "embeddings",
+                    numCandidates: 100,
+                    limit: 2,
+                    index: "vector_index"
+                }
+            }
+        ]);
+           console.log(results)
+           res.status(200).json(results)
+        } catch (error) {
+            res.status(500).json({message:"Search Failed"})
+        }
     }
 })
 

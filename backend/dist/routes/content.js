@@ -16,6 +16,7 @@ const express_1 = require("express");
 const mongoose_1 = __importDefault(require("mongoose"));
 const db_1 = require("../db/db");
 const youtube_1 = __importDefault(require("../ai/youtube"));
+const getEmbeddings_1 = require("../ai/getEmbeddings");
 const contentRouter = (0, express_1.Router)();
 contentRouter.get("/test", (req, res) => {
     res.json({
@@ -31,6 +32,10 @@ contentRouter.post("/create", (req, res) => __awaiter(void 0, void 0, void 0, fu
             });
             return;
         }
+        const searchableText = `${title} ${description}`;
+        console.log(searchableText);
+        const embeddings = yield (0, getEmbeddings_1.generateEmbeddings)(searchableText);
+        console.log(`Emb :${embeddings}`);
         yield db_1.ContentModel.create({
             link,
             type,
@@ -38,7 +43,8 @@ contentRouter.post("/create", (req, res) => __awaiter(void 0, void 0, void 0, fu
             description,
             date: Date.now(),
             tags,
-            userId
+            userId,
+            embeddings
         });
         res.status(201).json({
             message: "Content created"
@@ -50,6 +56,34 @@ contentRouter.post("/create", (req, res) => __awaiter(void 0, void 0, void 0, fu
             message: "Error something went wrong",
             error: error
         });
+    }
+}));
+contentRouter.post("/search", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    {
+        try {
+            const { query } = req.body;
+            if (!query)
+                return;
+            console.log(query);
+            const queryEmbedding = yield (0, getEmbeddings_1.generateEmbeddings)(query);
+            console.log(queryEmbedding);
+            const results = yield db_1.ContentModel.aggregate([
+                {
+                    $vectorSearch: {
+                        queryVector: queryEmbedding,
+                        path: "embeddings",
+                        numCandidates: 100,
+                        limit: 2,
+                        index: "vector_index"
+                    }
+                }
+            ]);
+            console.log(results);
+            res.status(200).json(results);
+        }
+        catch (error) {
+            res.status(500).json({ message: "Search Failed" });
+        }
     }
 }));
 contentRouter.post("/summarize", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -14,5 +14,6 @@ export const ApiRoutes = {
     remove: `${host}/api/v1/content/remove`,
     share: `${host}/api/v1/brain/share`,
     shareHexVal: `${host}/api/v1/brain/share/user`,
-    summary:`${host}/api/v1/content/summarize`
+    summary:`${host}/api/v1/content/summarize`,
+    search : `${host}/api/v1/content/search`,
 };
