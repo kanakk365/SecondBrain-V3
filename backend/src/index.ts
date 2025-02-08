@@ -12,26 +12,50 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Define the allowed origin
-const allowedOrigin = "https://second-brain-wine-sigma.vercel.app";
-// const allowedOrigin = " http://localhost:5173";
+// Define allowed web origin
+const allowedWebOrigin = "https://second-brain-wine-sigma.vercel.app";
 
-// CORS configuration
-const corsOptions = {
-    origin: allowedOrigin, // Allow requests from this specific origin
-    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
-    allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
-    credentials: true, // Allow cookies or authorization headers
+// CORS configuration using a function to validate origin.
+interface ICorsOriginCallback {
+    (err: Error | null, allow?: boolean): void;
+}
+
+interface ICorsOptions {
+    origin: (origin: string | undefined, callback: ICorsOriginCallback) => void;
+    methods: string[];
+    allowedHeaders: string[];
+    credentials: boolean;
+}
+
+const corsOptions: ICorsOptions = {
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        // Allow requests from the defined web origin.
+        if (origin === allowedWebOrigin) {
+            return callback(null, true);
+        }
+        
+        // Allow all locally loaded Chrome extensions
+        if (origin.startsWith("chrome-extension://")) {
+            return callback(null, true);
+        }
+        
+        callback(new Error("Not allowed by CORS"));
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
 };
 
-// Apply CORS middleware with the configuration
 app.use(cors(corsOptions));
 app.use(express.json());
 
 app.get("/check", (req, res) => {
-    res.json({
-        message: "I am good",
-    });
+  res.json({
+    message: "I am good",
+  });
 });
 
 app.use("/api/v1/user", userRouter);
@@ -40,10 +64,10 @@ app.use("/api/v1/tag", tagRouter);
 app.use("/api/v1/brain", brainRouter);
 
 async function connect() {
-    await connectDB();
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT} at http://localhost:${PORT}`);
-    });
+  await connectDB();
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT} at http://localhost:${PORT}`);
+  });
 }
 connect();
 
